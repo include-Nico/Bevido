@@ -255,20 +255,33 @@ function updateGauge(valueStr) {
     // ——— Colori per livello di ubriachezza ———
     let color;
     if (numericValue < 0.5) {
-        color = "#00e676"; // Verde  — sobrio
-        statusText.innerText    = "Livello: SOBRIO / OK";
+        color = "#00e676";                           // Verde   — sobrio
+        statusText.innerHTML = "Livello: SOBRIO / OK";
     } else if (numericValue < 1.5) {
-        color = "#ffb400"; // Arancio — ebbrezza
-        statusText.innerText    = "Livello: EBBREZZA (No Guida)";
+        color = "#ffb400";                           // Arancio — ebbrezza
+        statusText.innerHTML = "Livello: EBBREZZA (No Guida)";
+    } else if (numericValue < 3.0) {
+        color = "#ff4b2b";                           // Rosso   — ubriaco
+        statusText.innerHTML = "Livello: UBRIACO";
+    } else if (numericValue < 4.0) {
+        color = "#ff0055";                           // Rosa/fucsia — fermati!
+        statusText.innerHTML = `<i class="fa-solid fa-hand" style="margin-right:6px;"></i>FERMATI! PERICOLO DI VITA`;
     } else {
-        color = "#ff4b2b"; // Rosso  — ubriaco
-        statusText.innerText    = "Livello: UBRIACO";
+        color = "#9b00ff";                           // Viola   — coma etilico
+        statusText.innerHTML = `<i class="fa-solid fa-skull" style="margin-right:6px;"></i>COMA ETILICO`;
     }
 
     // Applica il colore a arco, numero BAC e testo stato
     progress.style.stroke    = color;
     bacElement.style.color   = color;
     statusText.style.color   = color;
+
+    // Animazione pulsante solo per livelli di pericolo
+    if (numericValue >= 3.0) {
+        statusText.classList.add('critical');
+    } else {
+        statusText.classList.remove('critical');
+    }
 
     // Timer smaltimento
     if (numericValue > 0) {
