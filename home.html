@@ -145,9 +145,10 @@
             <!-- Card sessione attiva -->
             <div id="activeSessionCard" class="widget-card active-session-widget" style="display:none;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-                    <h3 style="font-size:0.8rem; color:var(--primary);">
-                        <i class="fa-solid fa-circle-dot pulse"></i> LIVE
-                    </h3>
+                    <div class="live-badge">
+                        <span class="live-dot"></span>
+                        LIVE
+                    </div>
                     <button
                         onclick="toggleMemoryModal()"
                         class="btn-danger-small"
