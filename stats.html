@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B€V!D0 - Storico Serate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="glass-container dashboard-container">
+        <header class="dashboard-header">
+            <a href="dashboard.html" class="icon-btn"><i class="fa-solid fa-arrow-left"></i></a>
+            <h2>Il tuo <span>Storico</span></h2>
+            <div></div> </header>
+
+        <section class="stats-section">
+            <div id="noData" class="text-center" style="padding: 40px 0;">
+                <i class="fa-solid fa-calendar-xmark" style="font-size: 3rem; opacity: 0.3; margin-bottom: 15px; display: block;"></i>
+                <p>Nessuna serata registrata ancora.</p>
+            </div>
+            
+            <div id="statsList" class="stats-list">
+                </div>
+        </section>
+
+        <button class="btn-primary" onclick="clearHistory()" style="background: rgba(255, 75, 43, 0.2); border: 1px solid var(--danger); margin-top: 30px;">
+            Resetta Storico
+        </button>
+    </div>
+
+    <script src="js/stats.js"></script>
+</body>
+</html>

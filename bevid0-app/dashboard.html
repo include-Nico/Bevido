@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B€V!D0 - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+
+    <div class="glass-container dashboard-container">
+        <header class="dashboard-header">
+            <h2 id="welcomeUser">Ciao, <span>Utente</span></h2>
+            <div class="header-actions">
+                <button onclick="saveSession()" class="icon-btn" title="Salva serata"><i class="fa-solid fa-floppy-disk"></i></button>
+                <a href="stats.html" class="icon-btn"><i class="fa-solid fa-chart-line"></i></a>
+            </div>
+        </header>
+
+        <div class="gauge-section">
+            <div class="gauge-container">
+                <svg viewBox="0 0 200 100" class="gauge">
+                    <path class="gauge-bg" d="M20,90 A80,80 0 0,1 180,90" fill="none" stroke-width="12" />
+                    <path id="gaugeProgress" class="gauge-value" d="M20,90 A80,80 0 0,1 180,90" fill="none" stroke-width="12" stroke-dasharray="251.32" stroke-dashoffset="251.32" />
+                </svg>
+                <div class="gauge-text">
+                    <span id="bacValue">0.00</span>
+                    <small>g/L</small>
+                </div>
+            </div>
+            <p id="statusText" class="status-msg">Sei sobrio.</p>
+            <p id="burnTime" class="burn-timer"><i class="fa-solid fa-clock"></i> Smaltimento stimato: <span>0h 0m</span></p>
+        </div>
+
+        <hr class="divider">
+
+        <section class="meal-section">
+            <h3>Stato dello stomaco</h3>
+            <div class="meal-grid four-cols">
+                <button class="meal-btn" onclick="setMeal('salutare', 1.1)">
+                    <i class="fa-solid fa-leaf"></i>
+                    <span>Sano</span>
+                </button>
+                <button class="meal-btn" onclick="setMeal('sporco', 0.8)">
+                    <i class="fa-solid fa-burger"></i>
+                    <span>Sporco</span>
+                </button>
+                <button class="meal-btn" onclick="setMeal('male', 0.6)">
+                    <i class="fa-solid fa-skull-crossbones"></i>
+                    <span>Abbuffata</span>
+                </button>
+                <button class="meal-btn danger-btn" onclick="setMeal('digiuno', 1.5)">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>Digiuno</span>
+                </button>
+            </div>
+            <p id="mealWarning" class="warning-text">Seleziona come hai mangiato.</p>
+        </section>
+
+        <section class="drink-section">
+            <h3>Cosa Bevi?</h3>
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="drinkSearch" placeholder="Cerca un drink..." onkeyup="filterDrinks()">
+            </div>
+            <div class="quick-drinks" id="drinkList"></div>
+        </section>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
