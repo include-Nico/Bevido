@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B€V!D0 - Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="glass-container text-center" style="max-width: 400px;">
+        <header>
+            <h1 class="logo">B€V!<span>D0</span></h1>
+            <h2 id="homeWelcome" style="margin-bottom: 25px;">Ciao, Utente!</h2>
+        </header>
+
+        <div id="activeSessionCard" style="display: none; background: rgba(0, 212, 255, 0.1); border: 1px solid var(--primary); padding: 20px; border-radius: 15px; margin-bottom: 20px;">
+            <h3 style="color: var(--primary); margin-bottom: 10px;">🟢 Serata in Corso</h3>
+            <p style="font-size: 0.85rem; color: #cbd5e1;">Tempo stimato al recupero:</p>
+            <h2 id="homeTimer" style="font-size: 2.5rem; margin-bottom: 15px;">0h 0m</h2>
+            <button onclick="location.href='dashboard.html'" class="btn-primary">Apri Serata</button>
+        </div>
+
+        <div id="newSessionCard" style="margin-bottom: 20px;">
+            <button onclick="startNewSession()" class="btn-primary" style="font-size: 1.2rem; padding: 20px;"><i class="fa-solid fa-play"></i> Inizia Giornata</button>
+        </div>
+
+        <button onclick="location.href='stats.html'" class="btn-secondary"><i class="fa-solid fa-clock-rotate-left"></i> Storico Serate</button>
+    </div>
+
+    <script src="js/home.js"></script>
+</body>
+</html>
