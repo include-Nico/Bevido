@@ -83,6 +83,9 @@ window.onload = () => {
 
     calculateBAC();
     updateDrinkCounter();
+
+    // Ricalcola ogni minuto: il BAC scende col tempo
+    setInterval(calculateBAC, 60 * 1000);
 };
 
 function saveActiveSession() {
@@ -95,6 +98,11 @@ function saveActiveSession() {
 function addDrink(name, abv, ml) {
     const grams   = (ml * (abv / 100)) * 0.8;
     const timeNow = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+
+    // Salva il timestamp del primo drink come punto di partenza del metabolismo
+    if (!activeSession.startTime) {
+        activeSession.startTime = Date.now();
+    }
 
     activeSession.consumedDrinks.push({ name, abv, ml, grams, time: timeNow });
     activeSession.totalAlcoholGrams += grams;
@@ -214,11 +222,16 @@ function calculateBAC() {
 
     const r = (tbw / currentUser.weight) * 0.8;
 
-    // Widmark ottimizzata
-    let rawBac   = (activeSession.totalAlcoholGrams / (currentUser.weight * r));
-    let finalBac = rawBac * activeSession.mealFactor;
+    // Widmark ottimizzata: BAC di picco
+    let peakBac = (activeSession.totalAlcoholGrams / (currentUser.weight * r)) * activeSession.mealFactor;
+    if (isNaN(peakBac) || peakBac < 0) peakBac = 0;
 
-    if (isNaN(finalBac) || finalBac < 0) finalBac = 0;
+    // Sottrai il metabolismo: corpo smaltisce ~0.15 g/L per ora dal primo drink
+    let finalBac = peakBac;
+    if (activeSession.startTime && peakBac > 0) {
+        const elapsedHours = (Date.now() - activeSession.startTime) / (1000 * 60 * 60);
+        finalBac = Math.max(0, peakBac - (0.15 * elapsedHours));
+    }
 
     updateGauge(finalBac.toFixed(2));
 }
