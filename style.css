@@ -725,21 +725,29 @@ input:focus {
 
 .profile-info {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 8px;
     background: rgba(0, 0, 0, 0.2);
-    padding: 12px;
+    padding: 10px;
     border-radius: 12px;
 }
 
 .info-item {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 3px;
+    justify-content: center;
+    gap: 6px;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    padding: 7px 10px;
+    border-radius: 10px;
+    flex: 1;
+    white-space: nowrap;
 }
-.info-item i { color: var(--primary); font-size: 1rem; }
+.info-item i { color: var(--primary); font-size: 0.85rem; flex-shrink: 0; }
 
 /* =========================================
    RICORDI
