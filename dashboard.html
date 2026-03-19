@@ -9,60 +9,37 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-
     <div class="glass-container">
-        <header class="dashboard-header">
-            <button onclick="location.href='home.html'" class="icon-btn"><i class="fa-solid fa-house"></i></button>
-            <h1 class="logo">Party<span>!</span></h1>
-            <button onclick="concludeSession()" class="btn-danger-small">Chiudi</button>
+        <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <button onclick="location.href='home.html'" style="background:none; border:none; color:white; font-size:1.5rem;"><i class="fa-solid fa-house"></i></button>
+            <h1 style="font-weight:800;">Party<span>!</span></h1>
+            <button onclick="concludeSession()" style="background:rgba(255,75,43,0.2); border:1px solid var(--danger); padding:5px 15px; border-radius:10px; color:white;">Fine</button>
         </header>
 
         <div class="gauge-section">
             <div class="gauge-container">
-                <svg viewBox="0 0 200 100" class="gauge">
+                <svg viewBox="0 0 200 100">
                     <path class="gauge-bg" d="M20,90 A80,80 0 0,1 180,90" fill="none" stroke-width="12" />
                     <path id="gaugeProgress" class="gauge-value" d="M20,90 A80,80 0 0,1 180,90" fill="none" stroke-width="12" stroke-dasharray="251.32" stroke-dashoffset="251.32" />
                 </svg>
-                <div class="gauge-text">
-                    <span id="bacValue">0.00</span>
-                    <small>g/L</small>
-                </div>
+                <span id="bacValue">0.00</span>
             </div>
             <p id="statusText" class="status-msg">Sei sobrio.</p>
-            <p id="driveTime" class="burn-timer" style="display:none; color:var(--warning);"><i class="fa-solid fa-car"></i> Guida: <strong id="driveValue">0h 0m</strong></p>
-            <p id="burnTime" class="burn-timer"><i class="fa-solid fa-clock"></i> Totale: <strong id="burnValue">0h 0m</strong></p>
+            <div style="display:flex; flex-direction:column; align-items:center;">
+                <p id="driveTime" class="burn-timer" style="display:none;"><i class="fa-solid fa-car"></i> Guida: <strong id="driveValue"></strong></p>
+                <p id="burnTime" class="burn-timer"><i class="fa-solid fa-clock"></i> Smaltimento: <strong id="burnValue">0h 0m</strong></p>
+            </div>
         </div>
 
-        <hr class="divider">
+        <div class="meal-grid">
+            <button class="meal-btn active" onclick="setMeal('Sano', 0.9)"><i class="fa-solid fa-leaf"></i><span>Sano</span></button>
+            <button class="meal-btn" onclick="setMeal('Sporco', 0.8)"><i class="fa-solid fa-burger"></i><span>Sporco</span></button>
+            <button class="meal-btn" onclick="setMeal('Pieno', 0.7)"><i class="fa-solid fa-utensils"></i><span>Pieno</span></button>
+            <button class="meal-btn" onclick="setMeal('Vuoto', 1.2)"><i class="fa-solid fa-warning"></i><span>Vuoto</span></button>
+        </div>
 
-        <section class="meal-section">
-            <h3>Stomaco <i class="fa-solid fa-circle-info" onclick="toggleInfoModal()"></i></h3>
-            <div class="meal-grid">
-                <button class="meal-btn" onclick="setMeal('Sano', 0.9)">
-                    <i class="fa-solid fa-leaf"></i><span>Sano</span>
-                </button>
-                <button class="meal-btn" onclick="setMeal('Sporco', 0.8)">
-                    <i class="fa-solid fa-burger"></i><span>Sporco</span>
-                </button>
-                <button class="meal-btn" onclick="setMeal('Pieno', 0.7)">
-                    <i class="fa-solid fa-utensils"></i><span>Pieno</span>
-                </button>
-                <button class="meal-btn danger-btn" onclick="setMeal('Vuoto', 1.2)">
-                    <i class="fa-solid fa-triangle-exclamation"></i><span>Vuoto</span>
-                </button>
-            </div>
-        </section>
-
-        <section class="drink-section" style="margin-top: 25px;">
-            <h3>Cosa Bevi?</h3>
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="drinkSearch" placeholder="Cerca un drink..." onkeyup="filterDrinks()">
-            </div>
-            <div id="drinkList" class="quick-drinks"></div>
-        </section>
+        <div id="drinkList" class="quick-drinks"></div>
     </div>
-
     <script src="js/dashboard.js"></script>
 </body>
 </html>
