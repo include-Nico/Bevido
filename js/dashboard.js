@@ -10,31 +10,44 @@ const drinksDB = [
 ];
 
 let currentUser = JSON.parse(localStorage.getItem('bevid0_user'));
-let totalAlcoholGrams = 0;
-let mealFactor = 1.0; 
+let activeSession = JSON.parse(localStorage.getItem('bevid0_active_session')) || { totalAlcoholGrams: 0, mealFactor: 1.0, mealName: "Sano" };
 
 window.onload = () => {
     if(!currentUser) window.location.href = 'index.html';
-    document.querySelector('#welcomeUser span').innerText = currentUser.username;
     renderDrinks(drinksDB);
-    updateGauge(0);
+    
+    // Ripristina la selezione del pasto attiva
+    document.querySelectorAll('.meal-btn').forEach(btn => {
+        if(btn.querySelector('span').innerText === activeSession.mealName) {
+            btn.classList.add('active');
+        }
+    });
+
+    calculateBAC(); // Calcola basandosi sui dati salvati della sessione
 };
+
+function saveActiveSession() {
+    localStorage.setItem('bevid0_active_session', JSON.stringify(activeSession));
+}
 
 function addDrink(abv, ml) {
     const grams = (ml * (abv / 100)) * 0.8;
-    totalAlcoholGrams += grams;
+    activeSession.totalAlcoholGrams += grams;
+    saveActiveSession();
     calculateBAC();
 }
 
-function setMeal(type, factor) {
-    mealFactor = factor;
+function setMeal(name, factor) {
+    activeSession.mealFactor = factor;
+    activeSession.mealName = name;
+    saveActiveSession();
+
     const warning = document.getElementById('mealWarning');
-    
     document.querySelectorAll('.meal-btn').forEach(btn => btn.classList.remove('active'));
     event.currentTarget.classList.add('active');
 
-    if(type === 'digiuno') {
-        warning.innerHTML = "⚠️ <strong>Attenzione:</strong> Bere a stomaco vuoto è pericoloso e accelera drasticamente l'ebbrezza.";
+    if(name === 'Digiuno') {
+        warning.innerHTML = "⚠️ <strong>Attenzione:</strong> Bere a stomaco vuoto è pericoloso.";
         warning.style.color = "#ff4b2b";
     } else {
         warning.innerText = "Ottima scelta, mangiare aiuta a gestire l'alcol.";
@@ -44,8 +57,7 @@ function setMeal(type, factor) {
 }
 
 function calculateBAC() {
-    // Formula Widmark con impatto cibo
-    let bac = totalAlcoholGrams / (currentUser.weight * currentUser.ratio * mealFactor);
+    let bac = activeSession.totalAlcoholGrams / (currentUser.weight * currentUser.ratio * activeSession.mealFactor);
     updateGauge(bac.toFixed(2));
 }
 
@@ -57,12 +69,9 @@ function updateGauge(value) {
     
     bacElement.innerText = value;
     
-    // Range 4.0 g/L
     let percentage = Math.min(value, 4.0) / 4.0;
-    let offset = 251.32 - (percentage * 251.32);
-    progress.style.strokeDashoffset = offset;
+    progress.style.strokeDashoffset = 251.32 - (percentage * 251.32);
 
-    // Calcolo tempo di smaltimento (0.15 g/L all'ora)
     if(value > 0) {
         let totalMinutes = (value / 0.15) * 60;
         let hours = Math.floor(totalMinutes / 60);
@@ -72,16 +81,12 @@ function updateGauge(value) {
         burnTimeSpan.innerText = "0h 0m";
     }
 
-    // Stati Visivi
     if(value < 0.5) {
-        progress.style.stroke = "#00e676";
-        statusText.innerText = "Livello: OK";
+        progress.style.stroke = "#00e676"; statusText.innerText = "Livello: OK";
     } else if (value < 1.5) {
-        progress.style.stroke = "#ffb400";
-        statusText.innerText = "Livello: SBRONZO";
+        progress.style.stroke = "#ffb400"; statusText.innerText = "Livello: SBRONZO";
     } else {
-        progress.style.stroke = "#ff4b2b";
-        statusText.innerText = "Livello: UBRIACO";
+        progress.style.stroke = "#ff4b2b"; statusText.innerText = "Livello: UBRIACO";
     }
 }
 
@@ -100,16 +105,32 @@ function filterDrinks() {
     renderDrinks(filtered);
 }
 
-function saveSession() {
+// NUOVA FUNZIONE: Concludi la Giornata
+function concludeSession() {
     let currentBac = document.getElementById('bacValue').innerText;
-    if(currentBac == "0.00") return alert("Nulla da salvare!");
-    
-    let history = JSON.parse(localStorage.getItem('bevid0_history')) || [];
-    history.push({
-        date: new Date().toLocaleString(),
-        maxBac: currentBac,
-        mealType: document.querySelector('.meal-btn.active')?.querySelector('span').innerText || "Ignoto"
-    });
-    localStorage.setItem('bevid0_history', JSON.stringify(history));
-    alert("Serata salvata!");
+    if(confirm("Vuoi concludere questa giornata e salvarla nello storico?")) {
+        let history = JSON.parse(localStorage.getItem('bevid0_history')) || [];
+        history.push({
+            date: new Date().toLocaleString(),
+            maxBac: currentBac,
+            mealType: activeSession.mealName
+        });
+        localStorage.setItem('bevid0_history', JSON.stringify(history));
+        
+        // Cancella la sessione attiva
+        localStorage.removeItem('bevid0_active_session');
+        
+        // Torna alla home
+        window.location.href = 'home.html';
+    }
+}
+
+// Modal Info Pasti
+function toggleInfoModal() {
+    const modal = document.getElementById('infoModal');
+    if (modal.style.display === "none") {
+        modal.style.display = "flex";
+    } else {
+        modal.style.display = "none";
+    }
 }
