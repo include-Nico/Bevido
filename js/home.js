@@ -8,23 +8,40 @@ window.onload = () => {
 let currentUser = null;
 
 // ==========================================
-// 1. GESTIONE UTENTE E PROFILO
+// 1. GESTIONE UTENTE E CALCOLO ETÀ
 // ==========================================
+function calculateAge(dobString) {
+    if (!dobString) return "--"; // Fallback se manca la data
+    const dob = new Date(dobString);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    
+    // Se il mese non è ancora arrivato, o se siamo nello stesso mese ma il giorno non è arrivato, togli 1 anno
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+        age--;
+    }
+    return age;
+}
+
 function loadUser() {
     currentUser = JSON.parse(localStorage.getItem('bevid0_user'));
-    if(!currentUser) return window.location.href = 'index.html'; // Se non c'è, torna al login
+    if(!currentUser) return window.location.href = 'index.html'; // Torna al login
 
     document.getElementById('homeWelcome').innerText = `Ciao, ${currentUser.username}!`;
     
-    // Popola i dati in sola lettura
+    // Popola i dati in sola lettura (calcolando l'età attuale in tempo reale)
     document.getElementById('dispWeight').innerText = currentUser.weight;
     document.getElementById('dispHeight').innerText = currentUser.height;
-    document.getElementById('dispAge').innerText = currentUser.age;
+    
+    // Usa la data di nascita per mostrare l'età esatta, fallback se era salvato in versione vecchia
+    const computedAge = currentUser.dob ? calculateAge(currentUser.dob) : (currentUser.age || "-");
+    document.getElementById('dispAge').innerText = computedAge;
 
     // Popola i campi di input per la modifica
     document.getElementById('editWeight').value = currentUser.weight;
     document.getElementById('editHeight').value = currentUser.height;
-    document.getElementById('editAge').value = currentUser.age;
+    document.getElementById('editDob').value = currentUser.dob || "";
     document.getElementById('editGender').value = currentUser.ratio;
 }
 
@@ -45,7 +62,7 @@ function saveProfile() {
     // Aggiorna l'oggetto utente
     currentUser.weight = parseFloat(document.getElementById('editWeight').value);
     currentUser.height = parseFloat(document.getElementById('editHeight').value);
-    currentUser.age = parseInt(document.getElementById('editAge').value);
+    currentUser.dob = document.getElementById('editDob').value; // Nuova acquisizione DOB
     currentUser.ratio = parseFloat(document.getElementById('editGender').value);
 
     // Salva nel LocalStorage
@@ -54,7 +71,6 @@ function saveProfile() {
     // Ricarica la vista
     loadUser();
     toggleEditMode();
-    alert("Dati aggiornati con successo! I prossimi drink useranno questi valori.");
 }
 
 // ==========================================
@@ -67,7 +83,6 @@ function checkActiveSession() {
         document.getElementById('activeSessionCard').style.display = 'block';
         document.getElementById('newSessionCard').style.display = 'none';
         
-        // Calcola BAC e Timer
         let bac = activeSession.totalAlcoholGrams / (currentUser.weight * currentUser.ratio * activeSession.mealFactor);
         let totalMinutes = (bac / 0.15) * 60;
         let hours = Math.floor(totalMinutes / 60);
@@ -89,7 +104,7 @@ function startNewSession() {
         totalAlcoholGrams: 0,
         mealFactor: 1.0,
         mealName: "Sano",
-        startTime: Date.now() // Salviamo l'orario di inizio per calcolare la durata in futuro!
+        startTime: Date.now()
     }));
     window.location.href = 'dashboard.html';
 }
@@ -100,7 +115,6 @@ function startNewSession() {
 function calculateWeeklyStats() {
     const history = JSON.parse(localStorage.getItem('bevid0_history')) || [];
     
-    // Otteniamo la data di 7 giorni fa
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
@@ -108,8 +122,6 @@ function calculateWeeklyStats() {
     let weekMaxBac = 0.0;
 
     history.forEach(session => {
-        // Converte la stringa data salvata in oggetto Date
-        // Nota: Assumiamo formato "DD/MM/YYYY, HH:mm:ss" di toLocaleString()
         const sessionParts = session.date.split(',')[0].split('/'); 
         if(sessionParts.length === 3) {
             const sessionDate = new Date(sessionParts[2], sessionParts[1] - 1, sessionParts[0]);
