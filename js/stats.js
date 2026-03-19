@@ -31,9 +31,9 @@ function renderStats() {
         const day   = parts[0] || entry.date;
         const time  = parts[1] || "";
 
-        // Controlla se esiste già un ricordo salvato per questa serata
+        // Controlla se esiste già un ricordo salvato per questa voce specifica (per indice)
         const memories    = JSON.parse(localStorage.getItem('bevid0_memories')) || [];
-        const hasMemory   = memories.some(m => m.historyIndex === originalIndex || m.date === day);
+        const hasMemory   = memories.some(m => m.historyIndex === originalIndex);
         const memoryLabel = hasMemory
             ? `<span class="memory-saved-badge"><i class="fa-solid fa-camera"></i> Salvato</span>`
             : `<button class="save-memory-btn" onclick="openStatsMemoryModal(${originalIndex})">
@@ -135,8 +135,8 @@ function confirmStatsMemory() {
             image:        reader.result,
             date:         day,
             bac:          entry.maxBac,
-            // Nello storico non abbiamo la lista drink singoli, solo il picco
-            drinks:       [],
+            // Drink salvati con la serata (disponibili dalle sessioni nuove)
+            drinks:       entry.consumedDrinks || [],
             historyIndex: pendingMemoryIndex,
         };
 
