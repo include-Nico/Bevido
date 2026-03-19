@@ -30,7 +30,7 @@ body {
 }
 
 /* =========================================
-   UI COMPONENTS (Vetro, Bottoni, Form)
+   UI COMPONENTS (Vetro, Testi, Form)
    ========================================= */
 .glass-container {
     background: var(--glass);
@@ -43,6 +43,8 @@ body {
     max-width: 500px;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
 }
+
+.text-center { text-align: center; }
 
 .logo {
     font-size: 2.5rem;
@@ -98,6 +100,9 @@ input:focus {
     background: rgba(255, 255, 255, 0.12);
 }
 
+/* =========================================
+   BOTTONI
+   ========================================= */
 .btn-primary {
     background: linear-gradient(135deg, var(--primary), var(--secondary));
     color: white;
@@ -117,19 +122,61 @@ input:focus {
     box-shadow: 0 5px 15px rgba(0, 212, 255, 0.4);
 }
 
-.text-center { text-align: center; }
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: white;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+.btn-secondary:hover { 
+    background: rgba(255, 255, 255, 0.1); 
+    border-color: var(--primary); 
+}
+
+.btn-danger-small {
+    background: rgba(255, 75, 43, 0.2);
+    border: 1px solid var(--danger);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: 0.3s;
+    font-weight: 600;
+}
+
+.btn-danger-small:hover { 
+    background: var(--danger); 
+}
+
+.icon-btn { 
+    color: white; 
+    font-size: 1.5rem; 
+    transition: 0.3s; 
+    background: none; 
+    border: none; 
+    cursor: pointer;
+}
+
+.icon-btn:hover { color: var(--primary); }
 
 /* =========================================
-   DASHBOARD SPECIFICS
+   DASHBOARD & HEADER
    ========================================= */
 .dashboard-container { max-width: 600px; padding: 20px; }
 .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .dashboard-header h2 span { color: var(--primary); }
-.icon-btn { color: white; font-size: 1.5rem; transition: 0.3s; background: none; border: none; cursor: pointer;}
-.icon-btn:hover { color: var(--primary); }
 .header-actions { display: flex; gap: 15px; }
 
-/* Gauge/Tachimetro */
+/* Gauge / Tachimetro */
+.gauge-section { display: flex; flex-direction: column; align-items: center;}
 .gauge-container { position: relative; width: 250px; margin: 0 auto; height: 130px; }
 .gauge-bg { stroke: rgba(255,255,255,0.1); stroke-linecap: round; }
 .gauge-value { 
@@ -153,18 +200,27 @@ input:focus {
     text-align: center;
 }
 .burn-timer i { margin-right: 5px; }
-.gauge-section { display: flex; flex-direction: column; align-items: center;}
 
-/* Pasti */
+/* Divider */
+.divider { border: none; border-top: 1px solid var(--glass-border); margin: 25px 0; }
+
+/* =========================================
+   SEZIONE PASTI & DRINK
+   ========================================= */
+.meal-section h3 { display: flex; align-items: center; gap: 10px; }
+.info-icon { cursor: pointer; color: var(--primary); font-size: 1.2rem; transition: 0.3s; }
+.info-icon:hover { color: white; transform: scale(1.1); }
+
 .meal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
 .meal-grid.four-cols { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+
 .meal-btn { 
     background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); 
     padding: 10px; border-radius: 15px; color: white; cursor: pointer;
     display: flex; flex-direction: column; align-items: center; gap: 5px; transition: 0.3s;
 }
 .meal-btn i { font-size: 1.2rem; color: var(--primary); }
-.meal-btn span { font-size: 0.8rem; }
+.meal-btn span { font-size: 0.75rem; text-align: center; }
 .meal-btn:hover, .meal-btn.active { background: var(--primary); color: white; border-color: var(--primary);}
 .meal-btn:hover i, .meal-btn.active i { color: white; }
 
@@ -172,10 +228,10 @@ input:focus {
 
 .warning-text { font-size: 0.75rem; margin-top: 10px; text-align: center; min-height: 20px; color: #94a3b8;}
 
-/* Search e Drink */
 .search-box { position: relative; margin: 15px 0; }
 .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
 .search-box input { width: 100%; padding-left: 45px; }
+
 .quick-drinks { display: flex; flex-wrap: wrap; gap: 10px; max-height: 200px; overflow-y: auto; padding-right: 5px; }
 .drink-card { 
     background: rgba(255,255,255,0.1); padding: 10px 15px; border-radius: 10px; 
@@ -183,10 +239,22 @@ input:focus {
 }
 .drink-card:hover { border-color: var(--primary); background: rgba(0, 212, 255, 0.1); }
 .drink-card small { opacity: 0.6; font-size: 0.7rem; }
-.divider { border: none; border-top: 1px solid var(--glass-border); margin: 25px 0; }
 
 /* =========================================
-   STATISTICHE
+   MODAL INFO PASTI (POPUP)
+   ========================================= */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
+    display: flex; justify-content: center; align-items: center; z-index: 1000;
+    padding: 20px;
+}
+.modal-content { max-width: 400px; padding: 30px; text-align: left; }
+.modal-content p { font-size: 0.85rem; margin-bottom: 12px; color: #cbd5e1; line-height: 1.5; }
+.modal-content strong { color: white; font-size: 0.9rem; }
+
+/* =========================================
+   STATISTICHE (STORICO)
    ========================================= */
 .stats-list { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
 .stats-card {
