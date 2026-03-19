@@ -345,9 +345,10 @@ function concludeSession() {
         const dateString = now.toLocaleDateString('it-IT') + ", " + now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
 
         history.push({
-            date:     dateString,
-            maxBac:   currentBac,
-            mealType: activeSession.mealName,
+            date:          dateString,
+            maxBac:        currentBac,
+            mealType:      activeSession.mealName,
+            consumedDrinks: activeSession.consumedDrinks || [],
         });
 
         localStorage.setItem('bevid0_history', JSON.stringify(history));
