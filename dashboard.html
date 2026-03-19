@@ -27,9 +27,7 @@
                 <h3 style="margin: 0;"><i class="fa-solid fa-martini-glass"></i> Drink Bevuti</h3>
                 <button class="icon-btn" onclick="toggleConsumedModal()"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            
             <div id="consumedList" class="stats-list" style="max-height: 300px;"></div>
-            
             <button class="btn-primary" onclick="toggleConsumedModal()" style="margin-top: 15px;">Chiudi</button>
         </div>
     </div>
@@ -71,11 +69,7 @@
         <hr class="divider">
 
         <section class="meal-section">
-            <h3>
-                Stomaco 
-                <i class="fa-solid fa-circle-info info-icon" onclick="toggleInfoModal()"></i>
-            </h3>
-            
+            <h3>Stomaco <i class="fa-solid fa-circle-info info-icon" onclick="toggleInfoModal()"></i></h3>
             <div class="meal-grid four-cols">
                 <button class="meal-btn" onclick="setMeal('Sano', 0.9)">
                     <i class="fa-solid fa-leaf"></i><span>Sano</span>
@@ -100,7 +94,6 @@
                     <i class="fa-solid fa-list"></i> Storico <span id="drinkCounter" class="badge-count">0</span>
                 </button>
             </div>
-
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" id="drinkSearch" placeholder="Cerca un drink..." onkeyup="filterDrinks()">
