@@ -8,62 +8,12 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
+<body class="home-body">
 
-    <div class="glass-container home-hub">
-        <header class="home-header">
-            <div>
-                <h1 class="logo" style="font-size: 1.5rem; text-align: left; margin: 0;">B€V!<span>D0</span></h1>
-                <h2 id="homeWelcome" style="font-size: 1.2rem; margin-top: 5px;">Ciao, Utente!</h2>
-            </div>
-            <button onclick="location.href='stats.html'" class="icon-btn" title="Storico Completo">
-                <i class="fa-solid fa-clock-rotate-left"></i>
-            </button>
-        </header>
-
-        <div id="activeSessionCard" class="widget-card active-session-widget" style="display: none;">
-            <div class="widget-header">
-                <h3><i class="fa-solid fa-circle-dot" style="color: #00e676; animation: pulse 2s infinite;"></i> Serata in Corso</h3>
-            </div>
-            <h2 id="homeTimer" class="huge-text">0h 0m</h2>
-            <p class="subtitle text-center">Tempo stimato al recupero</p>
-            <button onclick="location.href='dashboard.html'" class="btn-primary" style="margin-top: 10px;">Apri Bevuta</button>
-        </div>
-
-        <div id="newSessionCard" class="widget-card">
-            <button onclick="startNewSession()" class="btn-primary pulse-btn" style="padding: 25px; font-size: 1.2rem;">
-                <i class="fa-solid fa-play" style="margin-right: 10px;"></i> Inizia Giornata
-            </button>
-        </div>
-
-        <h3 class="section-title">Questa Settimana</h3>
-        <div class="stats-grid-2">
-            <div class="stat-box">
-                <i class="fa-solid fa-martini-glass-citrus"></i>
-                <h4 id="weekCount">0</h4>
-                <span>Bevute</span>
-            </div>
-            <div class="stat-box">
-                <i class="fa-solid fa-chart-line"></i>
-                <h4 id="weekMax">0.00</h4>
-                <span>Max g/L</span>
-            </div>
-        </div>
-
-        <h3 class="section-title" style="margin-top: 25px;">Il tuo Fisico</h3>
-        
-        <div id="profileView" class="widget-card profile-widget">
-            <div class="profile-info">
-                <div class="info-item"><i class="fa-solid fa-weight-scale"></i> <span id="dispWeight">-</span> kg</div>
-                <div class="info-item"><i class="fa-solid fa-ruler-vertical"></i> <span id="dispHeight">-</span> cm</div>
-                <div class="info-item"><i class="fa-solid fa-cake-candles"></i> <span id="dispAge">-</span> anni</div>
-            </div>
-            <button onclick="toggleEditMode()" class="btn-secondary" style="margin-top: 15px; padding: 12px;">
-                <i class="fa-solid fa-pen"></i> Modifica Dati
-            </button>
-        </div>
-
-        <div id="profileEdit" class="widget-card" style="display: none; border-color: var(--primary);">
+    <div id="profileEditModal" class="modal-overlay" style="display:none; align-items: center;">
+        <div class="glass-container modal-content" style="border-radius: 20px; animation: slideUp 0.3s ease-out;">
+            <h3 style="margin-bottom: 15px; color: var(--primary);"><i class="fa-solid fa-pen"></i> Modifica Fisico</h3>
+            
             <div class="form-group" style="margin-top: 0;">
                 <div class="row">
                     <div class="input-box">
@@ -88,13 +38,69 @@
                         </select>
                     </div>
                 </div>
-                <div class="row" style="margin-top: 10px;">
-                    <button onclick="toggleEditMode()" class="btn-secondary" style="flex: 1;">Annulla</button>
-                    <button onclick="saveProfile()" class="btn-primary" style="flex: 1; margin-top: 10px;">Salva</button>
+                <div class="row" style="margin-top: 15px;">
+                    <button onclick="toggleEditMode()" class="btn-secondary" style="flex: 1; margin: 0; padding: 12px;">Annulla</button>
+                    <button onclick="saveProfile()" class="btn-primary" style="flex: 1; margin: 0; padding: 12px;">Salva</button>
                 </div>
             </div>
         </div>
+    </div>
 
+    <div class="glass-container home-hub">
+        <header class="home-header">
+            <div>
+                <h1 class="logo" style="font-size: 1.5rem; text-align: left; margin: 0;">B€V!<span>D0</span></h1>
+                <h2 id="homeWelcome" style="font-size: 1.1rem; margin-top: 2px;">Ciao, Utente!</h2>
+            </div>
+            <button onclick="location.href='stats.html'" class="icon-btn" title="Storico Completo">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </button>
+        </header>
+
+        <div class="home-content-wrapper">
+            
+            <div id="activeSessionCard" class="widget-card active-session-widget" style="display: none;">
+                <div class="widget-header">
+                    <h3><i class="fa-solid fa-circle-dot" style="color: #00e676; animation: pulse 2s infinite;"></i> In Corso</h3>
+                </div>
+                <h2 id="homeTimer" class="huge-text">0h 0m</h2>
+                <p class="subtitle text-center" style="margin-bottom: 5px;">Recupero stimato</p>
+                <button onclick="location.href='dashboard.html'" class="btn-primary" style="margin-top: 5px; padding: 15px;">Apri Bevuta</button>
+            </div>
+
+            <div id="newSessionCard" class="widget-card" style="padding: 10px;">
+                <button onclick="startNewSession()" class="btn-primary pulse-btn" style="padding: 22px; font-size: 1.1rem; margin-top: 0;">
+                    <i class="fa-solid fa-play" style="margin-right: 10px;"></i> Inizia Bevuta
+                </button>
+            </div>
+
+            <h3 class="section-title">Questa Settimana</h3>
+            <div class="stats-grid-2">
+                <div class="stat-box">
+                    <i class="fa-solid fa-martini-glass-citrus"></i>
+                    <h4 id="weekCount">0</h4>
+                    <span>Bevute</span>
+                </div>
+                <div class="stat-box">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <h4 id="weekMax">0.00</h4>
+                    <span>Max g/L</span>
+                </div>
+            </div>
+
+            <h3 class="section-title">Il tuo Fisico</h3>
+            <div class="widget-card profile-widget" style="margin-bottom: 0;">
+                <div class="profile-info">
+                    <div class="info-item"><i class="fa-solid fa-weight-scale"></i> <span id="dispWeight">-</span> kg</div>
+                    <div class="info-item"><i class="fa-solid fa-ruler-vertical"></i> <span id="dispHeight">-</span> cm</div>
+                    <div class="info-item"><i class="fa-solid fa-cake-candles"></i> <span id="dispAge">-</span> anni</div>
+                </div>
+                <button onclick="toggleEditMode()" class="btn-secondary" style="margin-top: 10px; padding: 12px;">
+                    <i class="fa-solid fa-pen"></i> Modifica
+                </button>
+            </div>
+            
+        </div>
     </div>
 
     <script src="js/home.js"></script>
