@@ -1,0 +1,98 @@
+/* Dashboard Specifics */
+.dashboard-container { max-width: 600px; padding: 20px; }
+.dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.dashboard-header h2 span { color: var(--primary); }
+.icon-btn { color: white; font-size: 1.5rem; transition: 0.3s; }
+.icon-btn:hover { color: var(--primary); }
+
+/* Gauge/Tachimetro */
+.gauge-container { position: relative; width: 250px; margin: 0 auto; height: 130px; }
+.gauge-bg { stroke: rgba(255,255,255,0.1); stroke-linecap: round; }
+.gauge-value { 
+    stroke: url(#gaugeGradient); 
+    stroke-linecap: round; 
+    transition: stroke-dashoffset 0.8s ease-out;
+}
+.gauge-text { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); text-align: center; }
+#bacValue { font-size: 2rem; font-weight: 800; display: block; line-height: 1; }
+.status-msg { text-align: center; font-weight: 600; margin-top: 10px; font-size: 0.9rem; }
+
+/* Pasti */
+.meal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+.meal-btn { 
+    background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); 
+    padding: 10px; border-radius: 15px; color: white; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 5px; transition: 0.3s;
+}
+.meal-btn i { font-size: 1.2rem; color: var(--primary); }
+.meal-btn small { font-size: 0.6rem; color: #94a3b8; opacity: 0.8; }
+.meal-btn:hover, .meal-btn.active { background: var(--primary); color: white; }
+.meal-btn:hover i, .meal-btn.active i { color: white; }
+
+/* Search e Drink */
+.search-box { position: relative; margin: 15px 0; }
+.search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+.search-box input { width: 100%; padding-left: 45px; }
+.quick-drinks { display: flex; flex-wrap: wrap; gap: 10px; max-height: 200px; overflow-y: auto; padding-right: 5px; }
+.drink-card { 
+    background: rgba(255,255,255,0.1); padding: 10px 15px; border-radius: 10px; 
+    cursor: pointer; font-size: 0.9rem; border: 1px solid transparent; transition: 0.2s;
+}
+.drink-card:hover { border-color: var(--primary); background: rgba(0, 212, 255, 0.1); }
+.divider { border: none; border-top: 1px solid var(--glass-border); margin: 25px 0; }
+
+.stats-list { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+.stats-card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid var(--primary);
+}
+.stats-info { display: flex; flex-direction: column; }
+.stats-info strong { font-size: 0.9rem; }
+.stats-info span { font-size: 0.75rem; color: #94a3b8; }
+.stats-value { font-weight: 800; font-size: 1.2rem; }
+
+/* Layout Pasti a 4 colonne */
+.meal-grid.four-cols {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.danger-btn.active {
+    background: var(--danger) !important;
+    border-color: #ff4b2b;
+}
+
+.warning-text {
+    font-size: 0.75rem;
+    margin-top: 10px;
+    text-align: center;
+    min-height: 20px;
+}
+
+/* Timer Smaltimento */
+.burn-timer {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-top: 15px;
+    display: inline-block;
+    color: var(--primary);
+}
+
+.burn-timer i { margin-right: 5px; }
+
+.header-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.drink-card small {
+    opacity: 0.6;
+    font-size: 0.7rem;
+}
