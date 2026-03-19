@@ -11,13 +11,12 @@ let currentUser = null;
 // 1. GESTIONE UTENTE E CALCOLO ETÀ
 // ==========================================
 function calculateAge(dobString) {
-    if (!dobString) return "--"; // Fallback se manca la data
+    if (!dobString) return "--"; 
     const dob = new Date(dobString);
     const today = new Date();
     let age = today.getFullYear() - dob.getFullYear();
     const m = today.getMonth() - dob.getMonth();
     
-    // Se il mese non è ancora arrivato, o se siamo nello stesso mese ma il giorno non è arrivato, togli 1 anno
     if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
         age--;
     }
@@ -26,19 +25,18 @@ function calculateAge(dobString) {
 
 function loadUser() {
     currentUser = JSON.parse(localStorage.getItem('bevid0_user'));
-    if(!currentUser) return window.location.href = 'index.html'; // Torna al login
+    if(!currentUser) return window.location.href = 'index.html'; 
 
     document.getElementById('homeWelcome').innerText = `Ciao, ${currentUser.username}!`;
     
-    // Popola i dati in sola lettura (calcolando l'età attuale in tempo reale)
+    // Popola i dati in sola lettura
     document.getElementById('dispWeight').innerText = currentUser.weight;
     document.getElementById('dispHeight').innerText = currentUser.height;
     
-    // Usa la data di nascita per mostrare l'età esatta, fallback se era salvato in versione vecchia
     const computedAge = currentUser.dob ? calculateAge(currentUser.dob) : (currentUser.age || "-");
     document.getElementById('dispAge').innerText = computedAge;
 
-    // Popola i campi di input per la modifica
+    // Popola i campi di input nel Modal per la modifica
     document.getElementById('editWeight').value = currentUser.weight;
     document.getElementById('editHeight').value = currentUser.height;
     document.getElementById('editDob').value = currentUser.dob || "";
@@ -46,31 +44,25 @@ function loadUser() {
 }
 
 function toggleEditMode() {
-    const viewDiv = document.getElementById('profileView');
-    const editDiv = document.getElementById('profileEdit');
-    
-    if (viewDiv.style.display === 'none') {
-        viewDiv.style.display = 'block';
-        editDiv.style.display = 'none';
+    const modal = document.getElementById('profileEditModal');
+    if (modal.style.display === 'none') {
+        modal.style.display = 'flex';
     } else {
-        viewDiv.style.display = 'none';
-        editDiv.style.display = 'block';
+        modal.style.display = 'none';
     }
 }
 
 function saveProfile() {
-    // Aggiorna l'oggetto utente
     currentUser.weight = parseFloat(document.getElementById('editWeight').value);
     currentUser.height = parseFloat(document.getElementById('editHeight').value);
-    currentUser.dob = document.getElementById('editDob').value; // Nuova acquisizione DOB
+    currentUser.dob = document.getElementById('editDob').value; 
     currentUser.ratio = parseFloat(document.getElementById('editGender').value);
 
-    // Salva nel LocalStorage
     localStorage.setItem('bevid0_user', JSON.stringify(currentUser));
     
-    // Ricarica la vista
     loadUser();
-    toggleEditMode();
+    toggleEditMode(); // Chiude il modal
+    customAlert("Dati aggiornati con successo!");
 }
 
 // ==========================================
@@ -83,12 +75,23 @@ function checkActiveSession() {
         document.getElementById('activeSessionCard').style.display = 'block';
         document.getElementById('newSessionCard').style.display = 'none';
         
-        let bac = activeSession.totalAlcoholGrams / (currentUser.weight * currentUser.ratio * activeSession.mealFactor);
+        let tbw = 0;
+        let age = calculateAge(currentUser.dob) || 25;
+        if (currentUser.ratio > 0.6) { 
+            tbw = 2.447 - (0.09156 * age) + (0.1074 * currentUser.height) + (0.3362 * currentUser.weight);
+        } else { 
+            tbw = -2.097 + (0.1069 * currentUser.height) + (0.2466 * currentUser.weight);
+        }
+        let r = (tbw / currentUser.weight) * 0.8;
+        
+        let rawBac = (activeSession.totalAlcoholGrams / (currentUser.weight * r));
+        let bac = rawBac * activeSession.mealFactor;
+        
         let totalMinutes = (bac / 0.15) * 60;
         let hours = Math.floor(totalMinutes / 60);
         let mins = Math.round(totalMinutes % 60);
         
-        if (bac <= 0) {
+        if (bac <= 0 || isNaN(bac)) {
             document.getElementById('homeTimer').innerText = `0h 0m`;
         } else {
             document.getElementById('homeTimer').innerText = `${hours}h ${mins}m`;
@@ -102,9 +105,10 @@ function checkActiveSession() {
 function startNewSession() {
     localStorage.setItem('bevid0_active_session', JSON.stringify({
         totalAlcoholGrams: 0,
-        mealFactor: 1.0,
+        mealFactor: 0.9,
         mealName: "Sano",
-        startTime: Date.now()
+        startTime: Date.now(),
+        consumedDrinks: []
     }));
     window.location.href = 'dashboard.html';
 }
@@ -136,4 +140,20 @@ function calculateWeeklyStats() {
 
     document.getElementById('weekCount').innerText = weekCount;
     document.getElementById('weekMax').innerText = weekMaxBac.toFixed(2);
+}
+
+// ==========================================
+// 4. POPUP CUSTOM ALERTS
+// ==========================================
+function customAlert(message) {
+    const overlay = document.createElement('div');
+    overlay.className = 'alert-overlay';
+    overlay.innerHTML = `
+        <div class="glass-container modal-content alert-box" style="animation: slideUp 0.3s ease-out; max-width: 320px;">
+            <h3 style="color: var(--success); margin-bottom: 10px;"><i class="fa-solid fa-check-circle"></i> Fatto!</h3>
+            <p style="margin-bottom: 20px; font-size: 0.9rem; color: white;">${message}</p>
+            <button class="btn-primary" style="margin: 0; padding: 12px; width: 100%;" onclick="this.closest('.alert-overlay').remove()">OK</button>
+        </div>
+    `;
+    document.body.appendChild(overlay);
 }
