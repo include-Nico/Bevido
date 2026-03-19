@@ -3,20 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B€V!D0 - Dashboard</title>
+    <title>B€V!D0 - Giornata Attiva</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="dashboard-body">
 
+    <div id="infoModal" class="modal-overlay" style="display:none;">
+        <div class="glass-container modal-content">
+            <h3 style="margin-bottom: 15px; color: var(--primary);">Info Assorbimento</h3>
+            <p><strong><i class="fa-solid fa-leaf"></i> Sano:</strong> Pasto equilibrato. L'alcol viene assorbito a ritmo normale e gestibile.</p>
+            <p><strong><i class="fa-solid fa-burger"></i> Sporco:</strong> Cibo molto grasso. Crea una barriera nello stomaco, ritardando l'effetto dell'alcol (ma non lo elimina!).</p>
+            <p><strong><i class="fa-solid fa-skull-crossbones"></i> Abbuffata:</strong> Stomaco pienissimo. L'alcol viene assorbito molto lentamente, mitigando i picchi.</p>
+            <p><strong><i class="fa-solid fa-triangle-exclamation"></i> Digiuno:</strong> Pericoloso. L'alcol entra direttamente nel sangue causando picchi improvvisi ed estremi.</p>
+            <button class="btn-primary" onclick="toggleInfoModal()" style="margin-top: 20px;">Ho Capito</button>
+        </div>
+    </div>
+
     <div class="glass-container dashboard-container">
         <header class="dashboard-header">
-            <h2 id="welcomeUser">Ciao, <span>Utente</span></h2>
-            <div class="header-actions">
-                <button onclick="saveSession()" class="icon-btn" title="Salva serata"><i class="fa-solid fa-floppy-disk"></i></button>
-                <a href="stats.html" class="icon-btn"><i class="fa-solid fa-chart-line"></i></a>
-            </div>
+            <button onclick="location.href='home.html'" class="icon-btn" title="Torna alla Home"><i class="fa-solid fa-house"></i></button>
+            <h2 id="welcomeUser" style="font-size: 1.2rem;">Giornata <span>Attiva</span></h2>
+            <button onclick="concludeSession()" class="btn-danger-small"><i class="fa-solid fa-flag-checkered"></i> Concludi</button>
         </header>
 
         <div class="gauge-section">
@@ -37,23 +46,23 @@
         <hr class="divider">
 
         <section class="meal-section">
-            <h3>Stato dello stomaco</h3>
+            <h3 style="display: flex; align-items: center; gap: 10px;">
+                Stato dello stomaco 
+                <i class="fa-solid fa-circle-info info-icon" onclick="toggleInfoModal()"></i>
+            </h3>
+            
             <div class="meal-grid four-cols">
-                <button class="meal-btn" onclick="setMeal('salutare', 1.1)">
-                    <i class="fa-solid fa-leaf"></i>
-                    <span>Sano</span>
+                <button class="meal-btn" onclick="setMeal('Sano', 1.1)">
+                    <i class="fa-solid fa-leaf"></i><span>Sano</span>
                 </button>
-                <button class="meal-btn" onclick="setMeal('sporco', 0.8)">
-                    <i class="fa-solid fa-burger"></i>
-                    <span>Sporco</span>
+                <button class="meal-btn" onclick="setMeal('Sporco', 0.8)">
+                    <i class="fa-solid fa-burger"></i><span>Sporco</span>
                 </button>
-                <button class="meal-btn" onclick="setMeal('male', 0.6)">
-                    <i class="fa-solid fa-skull-crossbones"></i>
-                    <span>Abbuffata</span>
+                <button class="meal-btn" onclick="setMeal('Abbuffata', 0.6)">
+                    <i class="fa-solid fa-skull-crossbones"></i><span>Abbuffata</span>
                 </button>
-                <button class="meal-btn danger-btn" onclick="setMeal('digiuno', 1.5)">
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-                    <span>Digiuno</span>
+                <button class="meal-btn danger-btn" onclick="setMeal('Digiuno', 1.5)">
+                    <i class="fa-solid fa-triangle-exclamation"></i><span>Digiuno</span>
                 </button>
             </div>
             <p id="mealWarning" class="warning-text">Seleziona come hai mangiato.</p>
