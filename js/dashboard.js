@@ -225,17 +225,15 @@ function formatTime(totalMins) {
 }
 
 // ==========================================
-// FUNZIONE TACHIMETRO E BUG FIX COLORE
+// FUNZIONE TACHIMETRO E AGGIORNAMENTO COLORI
 // ==========================================
 function updateGauge(valueStr) {
-    // IL BUG ERA QUI! Bisogna trasformarlo in NUMERO (Float) per fare i controlli if/else!
     const numericValue = parseFloat(valueStr);
     
     const bacElement = document.getElementById('bacValue');
     const progress = document.getElementById('gaugeProgress');
     const statusText = document.getElementById('statusText');
     
-    // Variabili Timer Blindate
     const burnValue = document.getElementById('burnValue');
     const driveTime = document.getElementById('driveTime');
     const driveIcon = document.getElementById('driveIcon');
@@ -273,7 +271,6 @@ function updateGauge(valueStr) {
         driveTime.style.display = 'none';
     }
 
-    // LOGICA COLORI E CONSIGLI CORRETTA (Usa numericValue)
     if(numericValue < 0.5) {
         progress.style.stroke = "#00e676"; 
         statusText.innerText = "Livello: SOBRIO / OK";
@@ -298,7 +295,8 @@ function renderDrinks(list) {
         let safeName = drink.name.replace(/'/g, "\\'"); 
         return `
         <div class="drink-card" onclick="addDrink('${safeName}', ${drink.abv}, ${drink.ml})">
-            ${drink.name} <br> <small>${drink.abv}% | ${drink.ml}ml</small>
+            <strong>${drink.name}</strong>
+            <small>${drink.abv}% | ${drink.ml}ml</small>
         </div>
         `;
     }).join('');
