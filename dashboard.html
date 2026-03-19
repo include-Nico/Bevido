@@ -21,6 +21,20 @@
         </div>
     </div>
 
+    <div id="consumedModal" class="modal-overlay" style="display:none; align-items: center;">
+        <div class="glass-container modal-content" style="border-radius: 20px; animation: slideUp 0.3s ease-out;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0;"><i class="fa-solid fa-martini-glass"></i> Drink Bevuti</h3>
+                <button class="icon-btn" onclick="toggleConsumedModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div id="consumedList" class="stats-list" style="max-height: 300px;">
+                </div>
+            
+            <button class="btn-primary" onclick="toggleConsumedModal()" style="margin-top: 15px;">Chiudi</button>
+        </div>
+    </div>
+
     <div class="glass-container dashboard-container">
         <header class="dashboard-header">
             <button onclick="location.href='home.html'" class="icon-btn" title="Home"><i class="fa-solid fa-house"></i></button>
@@ -70,8 +84,14 @@
             <p id="mealWarning" class="warning-text">Seleziona stato dello stomaco.</p>
         </section>
 
-        <section class="drink-section">
-            <h3>Cosa Bevi?</h3>
+        <section class="drink-section" style="margin-top: 20px;">
+            <div class="drink-header-row">
+                <h3>Cosa Bevi?</h3>
+                <button class="btn-secondary" style="margin: 0; padding: 8px 15px; width: auto; font-size: 0.8rem;" onclick="toggleConsumedModal()">
+                    <i class="fa-solid fa-list"></i> Storico <span id="drinkCounter" class="badge-count">0</span>
+                </button>
+            </div>
+
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" id="drinkSearch" placeholder="Cerca un drink..." onkeyup="filterDrinks()">
