@@ -10,33 +10,115 @@ const drinksDB = [
 ];
 
 let currentUser = JSON.parse(localStorage.getItem('bevid0_user'));
-let activeSession = JSON.parse(localStorage.getItem('bevid0_active_session')) || { totalAlcoholGrams: 0, mealFactor: 1.0, mealName: "Sano" };
+
+// Nuova struttura Active Session con Array dei Drink Bevuti
+let activeSession = JSON.parse(localStorage.getItem('bevid0_active_session')) || { 
+    totalAlcoholGrams: 0, 
+    mealFactor: 1.0, 
+    mealName: "Sano",
+    consumedDrinks: [] // ARRAY DRINK
+};
+
+// Se c'è una vecchia sessione salvata senza l'array consumedDrinks, lo creiamo per non far crashare l'app
+if(!activeSession.consumedDrinks) activeSession.consumedDrinks = [];
 
 window.onload = () => {
     if(!currentUser) window.location.href = 'index.html';
     renderDrinks(drinksDB);
     
-    // Ripristina la selezione del pasto attiva
+    // Ripristina pasto
     document.querySelectorAll('.meal-btn').forEach(btn => {
         if(btn.querySelector('span').innerText === activeSession.mealName) {
             btn.classList.add('active');
         }
     });
 
-    calculateBAC(); // Calcola basandosi sui dati salvati della sessione
+    calculateBAC();
+    updateDrinkCounter();
 };
 
 function saveActiveSession() {
     localStorage.setItem('bevid0_active_session', JSON.stringify(activeSession));
 }
 
-function addDrink(abv, ml) {
+// ==========================================
+// AGGIUNTA E RIMOZIONE DRINK SINGOLI
+// ==========================================
+function addDrink(name, abv, ml) {
     const grams = (ml * (abv / 100)) * 0.8;
+    
+    // Salva il drink nell'array con l'orario
+    const timeNow = new Date().toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'});
+    activeSession.consumedDrinks.push({ name: name, abv: abv, ml: ml, grams: grams, time: timeNow });
+    
     activeSession.totalAlcoholGrams += grams;
     saveActiveSession();
     calculateBAC();
+    updateDrinkCounter();
+    renderConsumedDrinks();
 }
 
+function removeDrink(index) {
+    // Rimuovi dall'array
+    const removedDrink = activeSession.consumedDrinks.splice(index, 1)[0];
+    
+    // Sottrai i grammi
+    activeSession.totalAlcoholGrams -= removedDrink.grams;
+    if(activeSession.totalAlcoholGrams < 0) activeSession.totalAlcoholGrams = 0; // Sicurezza
+    
+    saveActiveSession();
+    calculateBAC();
+    updateDrinkCounter();
+    renderConsumedDrinks();
+}
+
+// ==========================================
+// UI DRINK CONSUMATI
+// ==========================================
+function updateDrinkCounter() {
+    document.getElementById('drinkCounter').innerText = activeSession.consumedDrinks.length;
+}
+
+function renderConsumedDrinks() {
+    const container = document.getElementById('consumedList');
+    
+    if(activeSession.consumedDrinks.length === 0) {
+        container.innerHTML = `<p style="text-align:center; color:#94a3b8; font-size:0.8rem; padding: 20px 0;">Non hai ancora bevuto nulla.</p>`;
+        return;
+    }
+
+    // Mostriamo i drink dal più recente al più vecchio
+    let html = '';
+    for(let i = activeSession.consumedDrinks.length - 1; i >= 0; i--) {
+        let d = activeSession.consumedDrinks[i];
+        html += `
+            <div class="consumed-drink-item">
+                <div class="consumed-drink-info">
+                    <strong>${d.name}</strong>
+                    <span>${d.ml}ml - ${d.abv}% | <i class="fa-regular fa-clock"></i> ${d.time}</span>
+                </div>
+                <button class="delete-single-btn" style="width: 32px; height: 32px; font-size: 0.9rem;" onclick="removeDrink(${i})">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </div>
+        `;
+    }
+    container.innerHTML = html;
+}
+
+function toggleConsumedModal() {
+    const modal = document.getElementById('consumedModal');
+    if (modal.style.display === "none") {
+        renderConsumedDrinks(); // Aggiorna lista quando apri
+        modal.style.display = "flex";
+    } else {
+        modal.style.display = "none";
+    }
+}
+
+// ==========================================
+// CALCOLI E GESTIONE PASTO
+// ==========================================
 function setMeal(name, factor) {
     activeSession.mealFactor = factor;
     activeSession.mealName = name;
@@ -90,13 +172,20 @@ function updateGauge(value) {
     }
 }
 
+// ==========================================
+// RICERCA E RENDER DRINK DB
+// ==========================================
 function renderDrinks(list) {
     const container = document.getElementById('drinkList');
-    container.innerHTML = list.map(drink => `
-        <div class="drink-card" onclick="addDrink(${drink.abv}, ${drink.ml})">
+    container.innerHTML = list.map(drink => {
+        // Fix per gli apici nei nomi dei drink (es. "Jack Daniel's")
+        let safeName = drink.name.replace(/'/g, "\\'");
+        return `
+        <div class="drink-card" onclick="addDrink('${safeName}', ${drink.abv}, ${drink.ml})">
             ${drink.name} <br> <small>${drink.abv}% | ${drink.ml}ml</small>
         </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 function filterDrinks() {
@@ -105,7 +194,9 @@ function filterDrinks() {
     renderDrinks(filtered);
 }
 
-// NUOVA FUNZIONE: Concludi la Giornata con Custom Confirm
+// ==========================================
+// CHIUSURA E POPUP
+// ==========================================
 function concludeSession() {
     let currentBac = document.getElementById('bacValue').innerText;
     
@@ -127,7 +218,15 @@ function concludeSession() {
     });
 }
 
-// ... [INCOLLA IN FONDO AL FILE ANCHE IL POPUP PER FARLO FUNZIONARE] ...
+function toggleInfoModal() {
+    const modal = document.getElementById('infoModal');
+    if (modal.style.display === "none") {
+        modal.style.display = "flex";
+    } else {
+        modal.style.display = "none";
+    }
+}
+
 function customConfirm(message, onConfirm) {
     const overlay = document.createElement('div');
     overlay.className = 'alert-overlay';
@@ -146,14 +245,4 @@ function customConfirm(message, onConfirm) {
         overlay.remove();
         onConfirm();
     };
-}
-
-// Modal Info Pasti
-function toggleInfoModal() {
-    const modal = document.getElementById('infoModal');
-    if (modal.style.display === "none") {
-        modal.style.display = "flex";
-    } else {
-        modal.style.display = "none";
-    }
 }
