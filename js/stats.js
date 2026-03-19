@@ -9,38 +9,43 @@ function renderStats() {
 
     if (history.length === 0) {
         noData.style.display = 'block';
+        container.innerHTML = '';
         return;
     }
 
     noData.style.display = 'none';
-    
-    // Mostriamo solo le ultime 10 serate per evitare liste infinite
-    const recentHistory = history.reverse().slice(0, 10);
+    const recentLimit = Math.min(history.length, 10);
+    let html = '';
 
-    container.innerHTML = recentHistory.map(entry => {
-        // Separa la data e l'ora per la nuova grafica
+    for(let i = 0; i < recentLimit; i++) {
+        let originalIndex = history.length - 1 - i;
+        let entry = history[originalIndex];
+        
         let parts = entry.date.split(', ');
         let day = parts[0] || entry.date;
-        let time = parts[1] || ""; // Se l'orario non c'è, lascia vuoto
+        let time = parts[1] || "";
 
-        return `
+        html += `
         <div class="stats-card">
-            <div class="stats-date-box">
-                <i class="fa-regular fa-calendar"></i>
+            <div class="stats-info-group">
                 <div class="date-texts">
                     <strong>${day}</strong>
-                    <span>${time}</span>
+                    <span><i class="fa-regular fa-clock"></i> ${time}</span>
                 </div>
+                <div class="stats-meal"><i class="fa-solid fa-utensils"></i> ${entry.mealType}</div>
             </div>
-            <div class="stats-meal">
-                <i class="fa-solid fa-utensils"></i> ${entry.mealType}
-            </div>
-            <div class="stats-value" style="color: ${getBacColor(entry.maxBac)}">
-                ${entry.maxBac} <small>g/L</small>
+            <div class="stats-action-group">
+                <div class="stats-value" style="color: ${getBacColor(entry.maxBac)}">
+                    ${entry.maxBac} <small>g/L</small>
+                </div>
+                <button class="delete-single-btn" onclick="deleteSingleEntry(${originalIndex})">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
             </div>
         </div>
         `;
-    }).join('');
+    }
+    container.innerHTML = html;
 }
 
 function getBacColor(val) {
@@ -49,9 +54,39 @@ function getBacColor(val) {
     return '#ff4b2b';
 }
 
+function deleteSingleEntry(index) {
+    customConfirm("Vuoi eliminare questa singola serata?", () => {
+        let history = JSON.parse(localStorage.getItem('bevid0_history')) || [];
+        history.splice(index, 1); // Rimuove solo quell'elemento
+        localStorage.setItem('bevid0_history', JSON.stringify(history));
+        renderStats(); // Aggiorna la lista
+    });
+}
+
 function clearHistory() {
-    if(confirm("Vuoi davvero cancellare tutto lo storico? Questa azione è irreversibile.")) {
+    customConfirm("Vuoi davvero cancellare TUTTO lo storico? L'azione è irreversibile.", () => {
         localStorage.removeItem('bevid0_history');
-        location.reload();
-    }
+        renderStats();
+    });
+}
+
+// --- SISTEMA POPUP (Sostituisce alert/confirm) ---
+function customConfirm(message, onConfirm) {
+    const overlay = document.createElement('div');
+    overlay.className = 'alert-overlay';
+    overlay.innerHTML = `
+        <div class="glass-container modal-content alert-box" style="animation: slideUp 0.3s ease-out; max-width: 320px;">
+            <h3 style="color: var(--warning); margin-bottom: 10px;"><i class="fa-solid fa-circle-question"></i> Attenzione</h3>
+            <p style="margin-bottom: 20px; font-size: 0.9rem; color: white;">${message}</p>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-secondary" style="flex: 1; margin: 0; padding: 12px;" onclick="this.closest('.alert-overlay').remove()">Annulla</button>
+                <button class="btn-primary" style="flex: 1; margin: 0; padding: 12px; background: var(--danger); border-color: var(--danger);" id="confirmBtn">Conferma</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    document.getElementById('confirmBtn').onclick = () => {
+        overlay.remove();
+        onConfirm();
+    };
 }
