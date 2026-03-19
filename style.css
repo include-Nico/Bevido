@@ -1,5 +1,5 @@
 /* =========================================
-   BASE & VARIABILI GLOBALI
+   BASE & VARIABILI GLOBALI (MOBILE-FIRST)
    ========================================= */
 :root {
     --primary: #00d4ff;
@@ -8,8 +8,8 @@
     --warning: #ffb400;
     --success: #00e676;
     --bg-dark: #0f172a;
-    --glass: rgba(255, 255, 255, 0.1);
-    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass: rgba(255, 255, 255, 0.08); /* Vetro leggermente più scuro per contrasto */
+    --glass-border: rgba(255, 255, 255, 0.15);
 }
 
 * {
@@ -17,6 +17,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
+    -webkit-tap-highlight-color: transparent; /* Rimuove il flash grigio al tocco su mobile */
 }
 
 body {
@@ -24,249 +25,278 @@ body {
     color: white;
     min-height: 100vh;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 15px; /* Padding di sicurezza sui bordi del telefono */
 }
 
 /* =========================================
-   UI COMPONENTS (Vetro, Testi, Form)
+   UI COMPONENTS MODERNI
    ========================================= */
 .glass-container {
     background: var(--glass);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
-    border-radius: 24px;
-    padding: 30px;
-    width: 100%;
-    max-width: 500px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+    border-radius: 20px; /* Radius leggermente ridotto per mobile feel */
+    padding: 20px;
+    width: 100%; /* Prende tutta la larghezza disponibile */
+    max-width: 100%; /* Sovrascrive i vecchi limiti */
+    box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.3);
+    margin-bottom: 15px;
 }
 
 .text-center { text-align: center; }
 
 .logo {
-    font-size: 2.5rem;
+    font-size: 2rem; /* Leggermente più piccolo su mobile */
     font-weight: 800;
     text-align: center;
-    margin-bottom: 10px;
     letter-spacing: -1px;
     color: white;
 }
 
-.logo span {
-    color: var(--primary);
+.logo span { color: var(--primary); }
+
+p.subtitle {
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
 }
 
+/* Form e Input ottimizzati per Mobile */
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    margin-top: 25px;
+    gap: 12px;
+    margin-top: 20px;
 }
 
 .row {
     display: flex;
     gap: 10px;
+    width: 100%;
 }
 
 .input-box {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 4px;
 }
 
 label {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: #94a3b8;
     margin-left: 5px;
+    font-weight: 600;
 }
 
 input, select {
-    background: rgba(255, 255, 255, 0.07);
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--glass-border);
-    padding: 12px;
+    padding: 15px; /* Più alti per il tocco */
     border-radius: 12px;
     color: white;
-    font-size: 1rem;
+    font-size: 1rem; /* Almeno 16px per evitare zoom iOS */
     outline: none;
     transition: 0.3s;
+    width: 100%;
 }
 
 input:focus {
     border-color: var(--primary);
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 /* =========================================
-   BOTTONI
+   BOTTONI (TARGET DI TOCCO GRANDI)
    ========================================= */
 .btn-primary {
     background: linear-gradient(135deg, var(--primary), var(--secondary));
     color: white;
     border: none;
-    padding: 16px;
+    padding: 18px; /* Target molto grande */
     border-radius: 12px;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1rem;
     cursor: pointer;
     margin-top: 15px;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     width: 100%;
 }
 
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 212, 255, 0.4);
-}
+.btn-primary:active { transform: scale(0.98); opacity: 0.9; }
 
 .btn-secondary {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--glass-border);
     color: white;
-    padding: 16px;
+    padding: 18px;
     border-radius: 12px;
     font-weight: 600;
     cursor: pointer;
     width: 100%;
-    transition: 0.3s;
     margin-top: 10px;
-}
-
-.btn-secondary:hover { 
-    background: rgba(255, 255, 255, 0.1); 
-    border-color: var(--primary); 
 }
 
 .btn-danger-small {
     background: rgba(255, 75, 43, 0.2);
     border: 1px solid var(--danger);
     color: white;
-    padding: 8px 15px;
-    border-radius: 8px;
+    padding: 10px 18px;
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 0.85rem;
-    transition: 0.3s;
+    font-size: 0.8rem;
     font-weight: 600;
 }
 
-.btn-danger-small:hover { 
-    background: var(--danger); 
-}
-
 .icon-btn { 
-    color: white; 
-    font-size: 1.5rem; 
-    transition: 0.3s; 
-    background: none; 
-    border: none; 
-    cursor: pointer;
+    color: white; font-size: 1.5rem; transition: 0.3s; background: none; border: none; cursor: pointer;
+    width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; /* Target minimo mobile */
 }
-
 .icon-btn:hover { color: var(--primary); }
 
 /* =========================================
-   DASHBOARD & HEADER
+   DASHBOARD & HEADER (MOBILE FLOW)
    ========================================= */
-.dashboard-container { max-width: 600px; padding: 20px; }
-.dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.dashboard-container { padding: 15px; }
+.dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; width: 100%; }
+.dashboard-header h2 { font-size: 1.1rem; }
 .dashboard-header h2 span { color: var(--primary); }
-.header-actions { display: flex; gap: 15px; }
+.header-actions { display: flex; gap: 5px; }
 
-/* Gauge / Tachimetro */
+/* Gauge / Tachimetro (Scalabile) */
 .gauge-section { display: flex; flex-direction: column; align-items: center;}
-.gauge-container { position: relative; width: 250px; margin: 0 auto; height: 130px; }
+.gauge-container { position: relative; width: 100%; max-width: 280px; margin: 0 auto; height: auto;}
+.gauge { width: 100%; height: auto; }
 .gauge-bg { stroke: rgba(255,255,255,0.1); stroke-linecap: round; }
-.gauge-value { 
-    stroke: var(--primary);
-    stroke-linecap: round; 
-    transition: stroke-dashoffset 0.8s ease-out;
-}
-.gauge-text { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); text-align: center; }
-#bacValue { font-size: 2rem; font-weight: 800; display: block; line-height: 1; }
-.status-msg { text-align: center; font-weight: 600; margin-top: 10px; font-size: 0.9rem; }
+.gauge-value { stroke: var(--primary); stroke-linecap: round; transition: stroke-dashoffset 0.8s ease-out; }
+.gauge-text { position: absolute; bottom: 5%; left: 50%; transform: translateX(-50%); text-align: center; width: 100%; }
+#bacValue { font-size: 3rem; font-weight: 800; display: block; line-height: 1; margin-bottom: -5px; }
+.status-msg { text-align: center; font-weight: 600; margin-top: 10px; font-size: 0.85rem; }
 
 /* Timer Smaltimento */
 .burn-timer {
-    background: rgba(0, 0, 0, 0.2);
-    padding: 8px 15px;
-    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px 20px;
+    border-radius: 30px;
     font-size: 0.8rem;
     margin-top: 15px;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     color: var(--primary);
-    text-align: center;
+    font-weight: 600;
 }
-.burn-timer i { margin-right: 5px; }
 
-/* Divider */
-.divider { border: none; border-top: 1px solid var(--glass-border); margin: 25px 0; }
+.divider { border: none; border-top: 1px solid var(--glass-border); margin: 20px 0; width: 100%; }
 
 /* =========================================
-   SEZIONE PASTI & DRINK
+   SEZIONE PASTI (FOUR COLS MOBILE)
    ========================================= */
-.meal-section h3 { display: flex; align-items: center; gap: 10px; }
-.info-icon { cursor: pointer; color: var(--primary); font-size: 1.2rem; transition: 0.3s; }
-.info-icon:hover { color: white; transform: scale(1.1); }
+.meal-section h3 { display: flex; align-items: center; gap: 8px; font-size: 1rem; margin-bottom: 10px; }
+.info-icon { cursor: pointer; color: var(--primary); font-size: 1.1rem; padding: 5px; }
 
-.meal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
-.meal-grid.four-cols { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.meal-grid.four-cols { 
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 8px; 
+}
 
 .meal-btn { 
-    background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); 
-    padding: 10px; border-radius: 15px; color: white; cursor: pointer;
-    display: flex; flex-direction: column; align-items: center; gap: 5px; transition: 0.3s;
+    background: rgba(255,255,255,0.03); 
+    border: 1px solid var(--glass-border); 
+    height: 80px; /* Altezza fissa per mobile */
+    border-radius: 12px; 
+    color: white; 
+    cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; transition: 0.2s;
+    padding: 5px;
 }
-.meal-btn i { font-size: 1.2rem; color: var(--primary); }
-.meal-btn span { font-size: 0.75rem; text-align: center; }
-.meal-btn:hover, .meal-btn.active { background: var(--primary); color: white; border-color: var(--primary);}
+.meal-btn i { font-size: 1.4rem; color: var(--primary); }
+.meal-btn span { font-size: 0.65rem; text-align: center; font-weight: 600; line-height: 1.1; word-break: break-all;}
+.meal-btn:hover, .meal-btn.active { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-2px);}
 .meal-btn:hover i, .meal-btn.active i { color: white; }
 
 .danger-btn.active { background: var(--danger) !important; border-color: #ff4b2b !important; }
 
-.warning-text { font-size: 0.75rem; margin-top: 10px; text-align: center; min-height: 20px; color: #94a3b8;}
+.warning-text { font-size: 0.7rem; margin-top: 10px; text-align: center; min-height: 20px; color: #94a3b8;}
 
+/* =========================================
+   DRINK SECTION (SMART SCROLL)
+   ========================================= */
 .search-box { position: relative; margin: 15px 0; }
 .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
 .search-box input { width: 100%; padding-left: 45px; }
 
-.quick-drinks { display: flex; flex-wrap: wrap; gap: 10px; max-height: 200px; overflow-y: auto; padding-right: 5px; }
-.drink-card { 
-    background: rgba(255,255,255,0.1); padding: 10px 15px; border-radius: 10px; 
-    cursor: pointer; font-size: 0.9rem; border: 1px solid transparent; transition: 0.2s;
+.quick-drinks { 
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 Drink per riga su mobile */
+    gap: 10px; 
+    max-height: 250px; /* Limita altezza per evitare scrolling infinito della pagina */
+    overflow-y: auto; /* Scroll locale */
+    padding-right: 5px; 
+    margin-top: 10px;
 }
-.drink-card:hover { border-color: var(--primary); background: rgba(0, 212, 255, 0.1); }
-.drink-card small { opacity: 0.6; font-size: 0.7rem; }
+.drink-card { 
+    background: rgba(255,255,255,0.05); 
+    padding: 15px; 
+    border-radius: 12px; 
+    cursor: pointer; 
+    border: 1px solid transparent; 
+    transition: 0.2s;
+    display: flex; flex-direction: column; justify-content: space-between;
+    height: 70px;
+}
+.drink-card:hover, .drink-card:active { border-color: var(--primary); background: rgba(0, 212, 255, 0.1); }
+.drink-card small { opacity: 0.6; font-size: 0.7rem; color: #94a3b8; }
 
 /* =========================================
-   MODAL INFO PASTI (POPUP)
+   MODAL INFO PASTI (POPUP MOBILE)
    ========================================= */
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
-    display: flex; justify-content: center; align-items: center; z-index: 1000;
-    padding: 20px;
+    background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+    display: flex; justify-content: center; align-items: end; /* Allineato in basso tipo drawer mobile */
+    z-index: 1000;
+    padding: 10px;
 }
-.modal-content { max-width: 400px; padding: 30px; text-align: left; }
-.modal-content p { font-size: 0.85rem; margin-bottom: 12px; color: #cbd5e1; line-height: 1.5; }
-.modal-content strong { color: white; font-size: 0.9rem; }
+.modal-content { 
+    max-width: 100%; 
+    padding: 25px; 
+    text-align: left; 
+    border-radius: 20px 20px 0 0; /* Arrotondato solo sopra */
+    animation: slideUp 0.3s ease-out;
+}
+.modal-content h3 { font-size: 1.1rem; margin-bottom: 15px; color: var(--primary); }
+.modal-content p { font-size: 0.85rem; margin-bottom: 12px; color: #cbd5e1; line-height: 1.5; display: flex; gap: 10px;}
+.modal-content p i { color: var(--primary); width: 20px; text-align: center; margin-top: 3px;}
+.modal-content strong { color: white; font-size: 0.9rem; display: block;}
+
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
 /* =========================================
-   STATISTICHE (STORICO)
+   STATISTICHE (STORICO SCROLLABLE)
    ========================================= */
-.stats-list { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+.stats-list { 
+    display: flex; flex-direction: column; gap: 10px; 
+    margin-top: 15px; 
+    max-height: 350px; 
+    overflow-y: auto; 
+    padding-right: 5px;
+}
 .stats-card {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.03);
     padding: 15px;
-    border-radius: 15px;
+    border-radius: 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-left: 4px solid var(--primary);
+    border-left: 4px solid var(--glass-border);
 }
 .stats-info { display: flex; flex-direction: column; }
-.stats-info strong { font-size: 0.9rem; }
-.stats-info span { font-size: 0.75rem; color: #94a3b8; }
-.stats-value { font-weight: 800; font-size: 1.2rem; }
+.stats-info strong { font-size: 0.85rem; }
+.stats-info span { font-size: 0.7rem; color: #94a3b8; }
+.stats-value { font-weight: 800; font-size: 1.1rem; display: flex; align-items: baseline; gap: 3px;}
+.stats-value small { font-size: 0.7rem; opacity: 0.7; }
