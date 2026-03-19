@@ -58,15 +58,15 @@ const drinksDB = [
 
 let currentUser = JSON.parse(localStorage.getItem('bevid0_user'));
 
-// Sessione Attiva
+// Gestione Sessione Attiva
 let activeSession = JSON.parse(localStorage.getItem('bevid0_active_session')) || { 
     totalAlcoholGrams: 0, 
-    mealFactor: 1.0, 
+    mealFactor: 0.9, // Default: Sano
     mealName: "Sano",
     consumedDrinks: [] 
 };
 
-// Sicurezza per vecchie sessioni
+// Controllo retrocompatibilità
 if(!activeSession.consumedDrinks) activeSession.consumedDrinks = [];
 
 window.onload = () => {
@@ -92,7 +92,7 @@ function saveActiveSession() {
 // AGGIUNTA E RIMOZIONE DRINK
 // ==========================================
 function addDrink(name, abv, ml) {
-    const grams = (ml * (abv / 100)) * 0.8;
+    const grams = (ml * (abv / 100)) * 0.8; // Calcolo grammi alcol puro
     
     const timeNow = new Date().toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'});
     activeSession.consumedDrinks.push({ name: name, abv: abv, ml: ml, grams: grams, time: timeNow });
@@ -132,6 +132,7 @@ function renderConsumedDrinks() {
     }
 
     let html = '';
+    // Ciclo inverso per mostrare l'ultimo drink aggiunto in alto
     for(let i = activeSession.consumedDrinks.length - 1; i >= 0; i--) {
         let d = activeSession.consumedDrinks[i];
         html += `
@@ -160,10 +161,24 @@ function toggleConsumedModal() {
 }
 
 // ==========================================
-// CALCOLI E GESTIONE PASTO
+// CALCOLI SCIENTIFICI E GESTIONE PASTO
 // ==========================================
+
+// Helper per ottenere l'età esatta
+function getAge(dobString) {
+    if (!dobString) return 25; // Fallback se non inserita
+    const dob = new Date(dobString);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+        age--;
+    }
+    return age;
+}
+
 function setMeal(name, factor) {
-    activeSession.mealFactor = factor;
+    activeSession.mealFactor = factor; // Factor funge da moltiplicatore diretto
     activeSession.mealName = name;
     saveActiveSession();
 
@@ -172,18 +187,45 @@ function setMeal(name, factor) {
     event.currentTarget.classList.add('active');
 
     if(name === 'Digiuno') {
-        warning.innerHTML = "⚠️ <strong>Attenzione:</strong> Bere a stomaco vuoto è pericoloso.";
+        warning.innerHTML = "⚠️ <strong>Attenzione:</strong> Bere a stomaco vuoto causa un picco alcolemico del +20%!";
         warning.style.color = "#ff4b2b";
     } else {
-        warning.innerText = "Ottima scelta, mangiare aiuta a gestire l'alcol.";
+        warning.innerText = "Ottima scelta, mangiare rallenta l'assorbimento dell'alcol.";
         warning.style.color = "#94a3b8";
     }
     calculateBAC();
 }
 
 function calculateBAC() {
-    let bac = activeSession.totalAlcoholGrams / (currentUser.weight * currentUser.ratio * activeSession.mealFactor);
-    updateGauge(bac.toFixed(2));
+    let tbw = 0; // Total Body Water
+    let age = getAge(currentUser.dob);
+
+    // FORMULA DI WATSON (Calcolo accurato Acqua Corporea Totale in base al sesso)
+    // ratio > 0.6 presume sesso maschile
+    if (currentUser.ratio > 0.6) { 
+        tbw = 2.447 - (0.09156 * age) + (0.1074 * currentUser.height) + (0.3362 * currentUser.weight);
+    } else { 
+        tbw = -2.097 + (0.1069 * currentUser.height) + (0.2466 * currentUser.weight);
+    }
+
+    // Calcolo Coefficiente R personalizzato per Widmark
+    let r = (tbw / currentUser.weight) * 0.8;
+
+    // FORMULA WIDMARK OTTIMIZZATA
+    let rawBac = (activeSession.totalAlcoholGrams / (currentUser.weight * r));
+    let finalBac = rawBac * activeSession.mealFactor;
+    
+    if(isNaN(finalBac) || finalBac < 0) finalBac = 0;
+
+    updateGauge(finalBac.toFixed(2));
+}
+
+// Helper per formattare Ore e Minuti
+function formatTime(totalMins) {
+    if (totalMins <= 0) return "0h 0m";
+    let h = Math.floor(totalMins / 60);
+    let m = Math.round(totalMins % 60);
+    return `${h}h ${m}m`;
 }
 
 function updateGauge(value) {
@@ -191,6 +233,8 @@ function updateGauge(value) {
     const progress = document.getElementById('gaugeProgress');
     const statusText = document.getElementById('statusText');
     const burnTimeSpan = document.querySelector('#burnTime span');
+    const driveTimeSpan = document.querySelector('#driveTime span');
+    const driveTimeContainer = document.getElementById('driveTime');
     
     bacElement.innerText = value;
     
@@ -198,20 +242,43 @@ function updateGauge(value) {
     progress.style.strokeDashoffset = 251.32 - (percentage * 251.32);
 
     if(value > 0) {
-        let totalMinutes = (value / 0.15) * 60;
-        let hours = Math.floor(totalMinutes / 60);
-        let mins = Math.round(totalMinutes % 60);
-        burnTimeSpan.innerText = `${hours}h ${mins}m`;
+        // Tasso di smaltimento medio fegato umano: ~0.15 g/L all'ora
+        
+        // Timer 1: Smaltimento Totale (0.00)
+        let totalMinsZero = (value / 0.15) * 60;
+        burnTimeSpan.innerText = formatTime(totalMinsZero);
+
+        // Timer 2: Limite Guida (< 0.50)
+        if (value >= 0.50) {
+            let totalMinsDrive = ((value - 0.49) / 0.15) * 60;
+            driveTimeSpan.innerText = formatTime(totalMinsDrive);
+            driveTimeSpan.parentElement.style.color = "#ffb400"; // Giallo
+            driveTimeSpan.parentElement.style.background = "rgba(255, 180, 0, 0.15)";
+            driveTimeSpan.parentElement.innerHTML = `<i class="fa-solid fa-car"></i> Attesa Guida: <span>${formatTime(totalMinsDrive)}</span>`;
+            driveTimeContainer.style.display = 'inline-flex';
+        } else {
+            driveTimeSpan.parentElement.style.color = "#00e676"; // Verde
+            driveTimeSpan.parentElement.style.background = "rgba(0, 230, 118, 0.15)";
+            driveTimeSpan.parentElement.innerHTML = `<i class="fa-solid fa-car"></i> Puoi guidare!`;
+            driveTimeContainer.style.display = 'inline-flex';
+        }
     } else {
         burnTimeSpan.innerText = "0h 0m";
+        driveTimeContainer.style.display = 'none';
     }
 
     if(value < 0.5) {
-        progress.style.stroke = "#00e676"; statusText.innerText = "Livello: OK";
+        progress.style.stroke = "#00e676"; 
+        statusText.innerText = "Livello: SOBRIO / OK";
+        statusText.style.color = "#00e676";
     } else if (value < 1.5) {
-        progress.style.stroke = "#ffb400"; statusText.innerText = "Livello: SBRONZO";
+        progress.style.stroke = "#ffb400"; 
+        statusText.innerText = "Livello: EBBREZZA (No Guida)";
+        statusText.style.color = "#ffb400";
     } else {
-        progress.style.stroke = "#ff4b2b"; statusText.innerText = "Livello: UBRIACO";
+        progress.style.stroke = "#ff4b2b"; 
+        statusText.innerText = "Livello: UBRIACO";
+        statusText.style.color = "#ff4b2b";
     }
 }
 
@@ -221,7 +288,7 @@ function updateGauge(value) {
 function renderDrinks(list) {
     const container = document.getElementById('drinkList');
     container.innerHTML = list.map(drink => {
-        let safeName = drink.name.replace(/'/g, "\\'");
+        let safeName = drink.name.replace(/'/g, "\\'"); // Fix per nomi con apici
         return `
         <div class="drink-card" onclick="addDrink('${safeName}', ${drink.abv}, ${drink.ml})">
             ${drink.name} <br> <small>${drink.abv}% | ${drink.ml}ml</small>
