@@ -1,4 +1,4 @@
-/* ========================================
+/* =========================================
    BASE & VARIABILI GLOBALI (MOBILE-FIRST)
    ========================================= */
 :root {
@@ -824,6 +824,57 @@ input:focus {
 }
 .dashboard-header h2       { font-size: 1.1rem; }
 .dashboard-header h2 span  { color: var(--primary); }
+
+/* =========================================
+   LIVE BADGE ANIMATO
+   ========================================= */
+.live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #ff4b2b;
+    background: rgba(255, 75, 43, 0.12);
+    border: 1px solid rgba(255, 75, 43, 0.3);
+    padding: 5px 11px;
+    border-radius: 20px;
+}
+
+.live-dot {
+    position: relative;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ff4b2b;
+    flex-shrink: 0;
+}
+
+/* Onda che si espande attorno al pallino */
+.live-dot::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: rgba(255, 75, 43, 0.4);
+    animation: liveRipple 1.4s ease-out infinite;
+}
+
+/* Secondo cerchio con ritardo per effetto doppio ring */
+.live-dot::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: rgba(255, 75, 43, 0.2);
+    animation: liveRipple 1.4s ease-out 0.5s infinite;
+}
+
+@keyframes liveRipple {
+    0%   { inset: -2px;  opacity: 0.8; }
+    100% { inset: -10px; opacity: 0;   }
+}
 
 /* =========================================
    ANIMAZIONI
