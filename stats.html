@@ -10,25 +10,65 @@
 </head>
 <body>
 
+    <!-- ============================================
+         MODAL: SALVA RICORDO DA STORICO
+         ============================================ -->
+    <div id="statsMemoryModal" class="modal-overlay" style="display:none; align-items:center;">
+        <div class="glass-container modal-content">
+            <h3 style="margin-bottom:15px; color:var(--primary);">
+                <i class="fa-solid fa-camera"></i> Salva Ricordo
+            </h3>
+
+            <!-- Riepilogo serata selezionata -->
+            <div id="statsMemoryPreview" class="stats-memory-preview"></div>
+
+            <div class="form-group">
+                <div class="input-box">
+                    <label>Titolo Ricordo</label>
+                    <input type="text" id="statsMemoryTitle" placeholder="Es. Compleanno di Marco">
+                </div>
+                <div class="input-box">
+                    <label>Allega Foto</label>
+                    <input type="file" id="statsMemoryImage" accept="image/*" style="padding:10px;">
+                </div>
+                <div class="row" style="margin-top:15px;">
+                    <button onclick="closeStatsMemoryModal()" class="btn-secondary" style="flex:1;">Annulla</button>
+                    <button onclick="confirmStatsMemory()" class="btn-primary" style="flex:1;">Salva</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+         SCHERMATA PRINCIPALE STORICO
+         ============================================ -->
     <div class="glass-container dashboard-container">
+
         <header class="dashboard-header">
-            <a href="home.html" class="icon-btn"><i class="fa-solid fa-arrow-left"></i></a>
+            <a href="home.html" class="icon-btn">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
             <h2>Il tuo <span>Storico</span></h2>
-            <div></div> </header>
+            <div></div>
+        </header>
 
         <section class="stats-section">
-            <div id="noData" class="text-center" style="padding: 40px 0;">
-                <i class="fa-solid fa-calendar-xmark" style="font-size: 3rem; opacity: 0.3; margin-bottom: 15px; display: block;"></i>
+            <div id="noData" class="text-center" style="padding:40px 0; display:none;">
+                <i class="fa-solid fa-calendar-xmark" style="font-size:3rem; opacity:0.3; margin-bottom:15px; display:block;"></i>
                 <p>Nessuna serata registrata ancora.</p>
             </div>
-            
-            <div id="statsList" class="stats-list">
-                </div>
+
+            <div id="statsList" class="stats-list"></div>
         </section>
 
-        <button class="btn-primary" onclick="clearHistory()" style="background: rgba(255, 75, 43, 0.2); border: 1px solid var(--danger); margin-top: 30px;">
+        <button
+            class="btn-primary"
+            onclick="clearHistory()"
+            style="background:rgba(255,75,43,0.2); border:1px solid var(--danger); margin-top:30px;"
+        >
             <i class="fa-solid fa-trash"></i> Resetta Storico
         </button>
+
     </div>
 
     <script src="js/stats.js"></script>
