@@ -287,7 +287,7 @@ function updateGauge(valueStr) {
 }
 
 // ==========================================
-// RICERCA E RENDER DRINK DB
+// RICERCA E RENDER DRINK DB (Modificato per testi lunghi)
 // ==========================================
 function renderDrinks(list) {
     const container = document.getElementById('drinkList');
