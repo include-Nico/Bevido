@@ -106,12 +106,18 @@ function filterDrinks() {
 }
 
 // NUOVA FUNZIONE: Concludi la Giornata
+// NUOVA FUNZIONE: Concludi la Giornata (Senza Secondi)
 function concludeSession() {
     let currentBac = document.getElementById('bacValue').innerText;
     if(confirm("Vuoi concludere questa giornata e salvarla nello storico?")) {
         let history = JSON.parse(localStorage.getItem('bevid0_history')) || [];
+        
+        // Formattazione data precisa: es. "15/08/2023, 23:45"
+        let now = new Date();
+        let dateString = now.toLocaleDateString('it-IT') + ", " + now.toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'});
+
         history.push({
-            date: new Date().toLocaleString(),
+            date: dateString,
             maxBac: currentBac,
             mealType: activeSession.mealName
         });
