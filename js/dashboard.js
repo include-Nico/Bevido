@@ -105,14 +105,13 @@ function filterDrinks() {
     renderDrinks(filtered);
 }
 
-// NUOVA FUNZIONE: Concludi la Giornata
-// NUOVA FUNZIONE: Concludi la Giornata (Senza Secondi)
+// NUOVA FUNZIONE: Concludi la Giornata con Custom Confirm
 function concludeSession() {
     let currentBac = document.getElementById('bacValue').innerText;
-    if(confirm("Vuoi concludere questa giornata e salvarla nello storico?")) {
+    
+    customConfirm("Vuoi concludere questa giornata e salvarla nello storico?", () => {
         let history = JSON.parse(localStorage.getItem('bevid0_history')) || [];
         
-        // Formattazione data precisa: es. "15/08/2023, 23:45"
         let now = new Date();
         let dateString = now.toLocaleDateString('it-IT') + ", " + now.toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'});
 
@@ -123,12 +122,30 @@ function concludeSession() {
         });
         localStorage.setItem('bevid0_history', JSON.stringify(history));
         
-        // Cancella la sessione attiva
         localStorage.removeItem('bevid0_active_session');
-        
-        // Torna alla home
         window.location.href = 'home.html';
-    }
+    });
+}
+
+// ... [INCOLLA IN FONDO AL FILE ANCHE IL POPUP PER FARLO FUNZIONARE] ...
+function customConfirm(message, onConfirm) {
+    const overlay = document.createElement('div');
+    overlay.className = 'alert-overlay';
+    overlay.innerHTML = `
+        <div class="glass-container modal-content alert-box" style="animation: slideUp 0.3s ease-out; max-width: 320px;">
+            <h3 style="color: var(--primary); margin-bottom: 10px;"><i class="fa-solid fa-flag-checkered"></i> Fine Serata</h3>
+            <p style="margin-bottom: 20px; font-size: 0.9rem; color: white;">${message}</p>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-secondary" style="flex: 1; margin: 0; padding: 12px;" onclick="this.closest('.alert-overlay').remove()">Annulla</button>
+                <button class="btn-primary" style="flex: 1; margin: 0; padding: 12px;" id="confirmBtn">Vai alla Home</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    document.getElementById('confirmBtn').onclick = () => {
+        overlay.remove();
+        onConfirm();
+    };
 }
 
 // Modal Info Pasti
