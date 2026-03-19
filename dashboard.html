@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>B€V!D0 - Giornata Attiva</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -12,20 +12,22 @@
 
     <div id="infoModal" class="modal-overlay" style="display:none;">
         <div class="glass-container modal-content">
-            <h3 style="margin-bottom: 15px; color: var(--primary);">Info Assorbimento</h3>
-            <p><strong><i class="fa-solid fa-leaf"></i> Sano:</strong> Pasto equilibrato. L'alcol viene assorbito a ritmo normale e gestibile.</p>
-            <p><strong><i class="fa-solid fa-burger"></i> Sporco:</strong> Cibo molto grasso. Crea una barriera nello stomaco, ritardando l'effetto dell'alcol (ma non lo elimina!).</p>
-            <p><strong><i class="fa-solid fa-skull-crossbones"></i> Abbuffata:</strong> Stomaco pienissimo. L'alcol viene assorbito molto lentamente, mitigando i picchi.</p>
-            <p><strong><i class="fa-solid fa-triangle-exclamation"></i> Digiuno:</strong> Pericoloso. L'alcol entra direttamente nel sangue causando picchi improvvisi ed estremi.</p>
-            <button class="btn-primary" onclick="toggleInfoModal()" style="margin-top: 20px;">Ho Capito</button>
+            <h3 class="text-center">Info Assorbimento</h3>
+            <p><i class="fa-solid fa-leaf"></i> <span><strong>Sano:</strong> Pasto equilibrato. Assorbimento normale.</span></p>
+            <p><i class="fa-solid fa-burger"></i> <span><strong>Sporco:</strong> Molto grasso. Rallenta l'effetto (non lo elimina).</span></p>
+            <p><i class="fa-solid fa-skull-crossbones"></i> <span><strong>Abbuffata:</strong> Stomaco pieno. Mitiga i picchi.</span></p>
+            <p><i class="fa-solid fa-triangle-exclamation"></i> <span><strong>Digiuno:</strong> Pericoloso. Entra subito nel sangue.</span></p>
+            <button class="btn-primary" onclick="toggleInfoModal()">Chiudi</button>
         </div>
     </div>
 
     <div class="glass-container dashboard-container">
         <header class="dashboard-header">
-            <button onclick="location.href='home.html'" class="icon-btn" title="Torna alla Home"><i class="fa-solid fa-house"></i></button>
-            <h2 id="welcomeUser" style="font-size: 1.2rem;">Giornata <span>Attiva</span></h2>
-            <button onclick="concludeSession()" class="btn-danger-small"><i class="fa-solid fa-flag-checkered"></i> Concludi</button>
+            <button onclick="location.href='home.html'" class="icon-btn" title="Home"><i class="fa-solid fa-house"></i></button>
+            <h2 id="welcomeUser">Party<span>!</span></h2>
+            <div class="header-actions">
+                <button onclick="concludeSession()" class="btn-danger-small"><i class="fa-solid fa-check"></i> Chiudi</button>
+            </div>
         </header>
 
         <div class="gauge-section">
@@ -40,14 +42,14 @@
                 </div>
             </div>
             <p id="statusText" class="status-msg">Sei sobrio.</p>
-            <p id="burnTime" class="burn-timer"><i class="fa-solid fa-clock"></i> Smaltimento stimato: <span>0h 0m</span></p>
+            <p id="burnTime" class="burn-timer"><i class="fa-solid fa-clock"></i> <span>0h 0m</span></p>
         </div>
 
         <hr class="divider">
 
         <section class="meal-section">
-            <h3 style="display: flex; align-items: center; gap: 10px;">
-                Stato dello stomaco 
+            <h3>
+                Stomaco 
                 <i class="fa-solid fa-circle-info info-icon" onclick="toggleInfoModal()"></i>
             </h3>
             
@@ -65,7 +67,7 @@
                     <i class="fa-solid fa-triangle-exclamation"></i><span>Digiuno</span>
                 </button>
             </div>
-            <p id="mealWarning" class="warning-text">Seleziona come hai mangiato.</p>
+            <p id="mealWarning" class="warning-text">Seleziona stato dello stomaco.</p>
         </section>
 
         <section class="drink-section">
