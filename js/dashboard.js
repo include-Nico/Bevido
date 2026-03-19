@@ -1,32 +1,79 @@
+// ==========================================
+// DATABASE DRINK AVANZATO
+// ==========================================
 const drinksDB = [
-    { name: "Birra Media", abv: 5, ml: 400 },
-    { name: "Vino Rosso", abv: 12, ml: 150 },
-    { name: "Gin Lemon", abv: 40, ml: 150 },
-    { name: "Spritz", abv: 11, ml: 200 },
-    { name: "Shot Tequila", abv: 40, ml: 30 },
-    { name: "Negroni", abv: 28, ml: 90 },
-    { name: "Mojito", abv: 15, ml: 200 },
-    { name: "Vodka Redbull", abv: 40, ml: 200 }
+    { name: "Birra chiara (Piccola)", abv: 4.8, ml: 200 },
+    { name: "Birra chiara (Media)", abv: 4.8, ml: 400 },
+    { name: "Birra chiara (Litro)", abv: 4.8, ml: 1000 },
+    { name: "Birra IPA", abv: 6.5, ml: 330 },
+    { name: "Birra Stout (Guinness)", abv: 4.2, ml: 568 },
+    { name: "Birra doppio malto", abv: 7.5, ml: 330 },
+    { name: "Birra analcolica", abv: 0.5, ml: 330 },
+    { name: "Vino rosso leggero", abv: 12.5, ml: 150 },
+    { name: "Vino rosso strutturato", abv: 14.5, ml: 150 },
+    { name: "Vino bianco fermo", abv: 12.0, ml: 150 },
+    { name: "Prosecco / Spumante", abv: 11.0, ml: 150 },
+    { name: "Champagne", abv: 12.0, ml: 150 },
+    { name: "Vino passito", abv: 14.5, ml: 75 },
+    { name: "Vermouth", abv: 15.5, ml: 50 },
+    { name: "Porto", abv: 19.5, ml: 75 },
+    { name: "Vodka Shot", abv: 40.0, ml: 40 },
+    { name: "Vodka Redbull", abv: 10.0, ml: 200 },
+    { name: "Gin liscio", abv: 43.0, ml: 40 },
+    { name: "Gin Lemon", abv: 10.0, ml: 200 },
+    { name: "Rum bianco", abv: 38.0, ml: 40 },
+    { name: "Rum scuro", abv: 40.0, ml: 40 },
+    { name: "Tequila Shot", abv: 40.0, ml: 40 },
+    { name: "Whisky (Single Malt)", abv: 40.0, ml: 40 },
+    { name: "Bourbon Whiskey", abv: 42.0, ml: 40 },
+    { name: "Cognac / Armagnac", abv: 40.0, ml: 40 },
+    { name: "Grappa bianca", abv: 40.0, ml: 40 },
+    { name: "Grappa barricata", abv: 42.0, ml: 40 },
+    { name: "Mezcal", abv: 42.0, ml: 40 },
+    { name: "Cachaça", abv: 40.0, ml: 40 },
+    { name: "Assenzio", abv: 65.0, ml: 30 },
+    { name: "Amaro classico", abv: 29.0, ml: 40 },
+    { name: "Fernet / Amaro forte", abv: 40.0, ml: 40 },
+    { name: "Limoncello", abv: 30.0, ml: 30 },
+    { name: "Sambuca", abv: 40.0, ml: 30 },
+    { name: "Jägermeister", abv: 35.0, ml: 40 },
+    { name: "Crema di Whisky (Baileys)", abv: 17.0, ml: 50 },
+    { name: "Amaretto", abv: 28.0, ml: 40 },
+    { name: "Campari", abv: 25.0, ml: 40 },
+    { name: "Aperol", abv: 11.0, ml: 40 },
+    { name: "Spritz", abv: 9.0, ml: 200 },
+    { name: "Negroni", abv: 25.0, ml: 90 },
+    { name: "Americano", abv: 13.0, ml: 150 },
+    { name: "Gin Tonic", abv: 11.0, ml: 200 },
+    { name: "Mojito", abv: 12.0, ml: 200 },
+    { name: "Moscow Mule", abv: 11.0, ml: 200 },
+    { name: "Margarita", abv: 22.0, ml: 100 },
+    { name: "Daiquiri", abv: 21.0, ml: 100 },
+    { name: "Martini Cocktail", abv: 30.0, ml: 90 },
+    { name: "Old Fashioned", abv: 31.0, ml: 90 },
+    { name: "Cosmopolitan", abv: 16.0, ml: 100 },
+    { name: "Piña Colada", abv: 12.0, ml: 200 },
+    { name: "Long Island Iced Tea", abv: 21.0, ml: 250 }
 ];
 
 let currentUser = JSON.parse(localStorage.getItem('bevid0_user'));
 
-// Nuova struttura Active Session con Array dei Drink Bevuti
+// Sessione Attiva
 let activeSession = JSON.parse(localStorage.getItem('bevid0_active_session')) || { 
     totalAlcoholGrams: 0, 
     mealFactor: 1.0, 
     mealName: "Sano",
-    consumedDrinks: [] // ARRAY DRINK
+    consumedDrinks: [] 
 };
 
-// Se c'è una vecchia sessione salvata senza l'array consumedDrinks, lo creiamo per non far crashare l'app
+// Sicurezza per vecchie sessioni
 if(!activeSession.consumedDrinks) activeSession.consumedDrinks = [];
 
 window.onload = () => {
     if(!currentUser) window.location.href = 'index.html';
     renderDrinks(drinksDB);
     
-    // Ripristina pasto
+    // Ripristina pasto attivo visualmente
     document.querySelectorAll('.meal-btn').forEach(btn => {
         if(btn.querySelector('span').innerText === activeSession.mealName) {
             btn.classList.add('active');
@@ -42,12 +89,11 @@ function saveActiveSession() {
 }
 
 // ==========================================
-// AGGIUNTA E RIMOZIONE DRINK SINGOLI
+// AGGIUNTA E RIMOZIONE DRINK
 // ==========================================
 function addDrink(name, abv, ml) {
     const grams = (ml * (abv / 100)) * 0.8;
     
-    // Salva il drink nell'array con l'orario
     const timeNow = new Date().toLocaleTimeString('it-IT', {hour: '2-digit', minute:'2-digit'});
     activeSession.consumedDrinks.push({ name: name, abv: abv, ml: ml, grams: grams, time: timeNow });
     
@@ -59,12 +105,10 @@ function addDrink(name, abv, ml) {
 }
 
 function removeDrink(index) {
-    // Rimuovi dall'array
     const removedDrink = activeSession.consumedDrinks.splice(index, 1)[0];
     
-    // Sottrai i grammi
     activeSession.totalAlcoholGrams -= removedDrink.grams;
-    if(activeSession.totalAlcoholGrams < 0) activeSession.totalAlcoholGrams = 0; // Sicurezza
+    if(activeSession.totalAlcoholGrams < 0) activeSession.totalAlcoholGrams = 0; 
     
     saveActiveSession();
     calculateBAC();
@@ -73,7 +117,7 @@ function removeDrink(index) {
 }
 
 // ==========================================
-// UI DRINK CONSUMATI
+// UI DRINK CONSUMATI E MODAL
 // ==========================================
 function updateDrinkCounter() {
     document.getElementById('drinkCounter').innerText = activeSession.consumedDrinks.length;
@@ -87,17 +131,16 @@ function renderConsumedDrinks() {
         return;
     }
 
-    // Mostriamo i drink dal più recente al più vecchio
     let html = '';
     for(let i = activeSession.consumedDrinks.length - 1; i >= 0; i--) {
         let d = activeSession.consumedDrinks[i];
         html += `
-            <div class="consumed-drink-item">
+            <div class="consumed-drink-item" style="margin-bottom: 8px;">
                 <div class="consumed-drink-info">
                     <strong>${d.name}</strong>
                     <span>${d.ml}ml - ${d.abv}% | <i class="fa-regular fa-clock"></i> ${d.time}</span>
                 </div>
-                <button class="delete-single-btn" style="width: 32px; height: 32px; font-size: 0.9rem;" onclick="removeDrink(${i})">
+                <button class="delete-single-btn" style="width: 35px; height: 35px; font-size: 0.9rem;" onclick="removeDrink(${i})">
                     <i class="fa-solid fa-trash-can"></i>
                 </button>
             </div>
@@ -109,7 +152,7 @@ function renderConsumedDrinks() {
 function toggleConsumedModal() {
     const modal = document.getElementById('consumedModal');
     if (modal.style.display === "none") {
-        renderConsumedDrinks(); // Aggiorna lista quando apri
+        renderConsumedDrinks(); 
         modal.style.display = "flex";
     } else {
         modal.style.display = "none";
@@ -178,7 +221,6 @@ function updateGauge(value) {
 function renderDrinks(list) {
     const container = document.getElementById('drinkList');
     container.innerHTML = list.map(drink => {
-        // Fix per gli apici nei nomi dei drink (es. "Jack Daniel's")
         let safeName = drink.name.replace(/'/g, "\\'");
         return `
         <div class="drink-card" onclick="addDrink('${safeName}', ${drink.abv}, ${drink.ml})">
