@@ -53,7 +53,7 @@ const drinksDB = [
     { name: "Old Fashioned",             abv: 31.0, ml: 90   },
     { name: "Cosmopolitan",              abv: 16.0, ml: 100  },
     { name: "Piña Colada",               abv: 12.0, ml: 200  },
-    { name: "Long Island Iced Tea",      abv: 21.0, ml: 250  }
+    { name: "Long Island Iced Tea",      abv: 21.0, ml: 250  },
 ];
 
 let currentUser = JSON.parse(localStorage.getItem('bevid0_user'));
@@ -63,8 +63,7 @@ let activeSession = JSON.parse(localStorage.getItem('bevid0_active_session')) ||
     totalAlcoholGrams: 0,
     mealFactor: 0.9,
     mealName: "Sano",
-    consumedDrinks: [],
-    startTime: null
+    consumedDrinks: []
 };
 
 // Retrocompatibilità per vecchi salvataggi senza consumedDrinks
@@ -85,7 +84,7 @@ window.onload = () => {
     calculateBAC();
     updateDrinkCounter();
 
-    // Ricalcola ogni secondo per il countdown fluido
+    // Ricalcola ogni secondo per avere il countdown fluido
     setInterval(calculateBAC, 1000);
 };
 
@@ -97,7 +96,7 @@ function saveActiveSession() {
 // AGGIUNTA E RIMOZIONE DRINK
 // ==========================================
 function addDrink(name, abv, ml) {
-    const grams = (ml * (abv / 100)) * 0.8;
+    const grams   = (ml * (abv / 100)) * 0.8;
     const timeNow = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
 
     // Salva il timestamp del primo drink come punto di partenza del metabolismo
@@ -118,11 +117,9 @@ function removeDrink(index) {
     const removed = activeSession.consumedDrinks.splice(index, 1)[0];
 
     activeSession.totalAlcoholGrams -= removed.grams;
-    
-    // Controlla se i grammi sono scesi a zero o meno (resetta la sessione temporale)
     if (activeSession.totalAlcoholGrams <= 0) {
         activeSession.totalAlcoholGrams = 0;
-        activeSession.startTime = null; 
+        activeSession.startTime = null; // Resetta il timer se i grammi sono 0
     }
 
     saveActiveSession();
@@ -216,11 +213,6 @@ function setMeal(name, factor) {
 }
 
 function calculateBAC() {
-    if (!currentUser || activeSession.totalAlcoholGrams <= 0) {
-        updateGauge("0.00");
-        return;
-    }
-
     let tbw = 0;
     const age = getAge(currentUser.dob);
 
@@ -247,6 +239,7 @@ function calculateBAC() {
     updateGauge(finalBac.toFixed(2));
 }
 
+// Modificata per mostrare ore, minuti e secondi
 function formatTime(totalMins) {
     if (totalMins <= 0) return "0h 0m 0s";
     const h = Math.floor(totalMins / 60);
@@ -315,20 +308,20 @@ function updateGauge(valueStr) {
 
         if (numericValue >= 0.50) {
             const totalMinsDrive = ((numericValue - 0.49) / 0.15) * 60;
-            driveValue.innerText      = formatTime(totalMinsDrive);
-            driveValue.style.display  = "inline";
-            driveLabel.innerText      = "Attesa Guida: ";
-            driveIcon.className       = "fa-solid fa-car";
-            driveTime.style.color     = "#ffb400";
+            driveValue.innerText       = formatTime(totalMinsDrive);
+            driveValue.style.display   = "inline";
+            driveLabel.innerText       = "Attesa Guida: ";
+            driveIcon.className        = "fa-solid fa-car";
+            driveTime.style.color      = "#ffb400";
             driveTime.style.background = "rgba(255, 180, 0, 0.15)";
-            driveTime.style.display   = "inline-flex";
+            driveTime.style.display    = "inline-flex";
         } else {
-            driveValue.style.display  = "none";
-            driveLabel.innerText      = "Puoi guidare!";
-            driveIcon.className       = "fa-solid fa-car";
-            driveTime.style.color     = "#00e676";
+            driveValue.style.display   = "none";
+            driveLabel.innerText       = "Puoi guidare!";
+            driveIcon.className        = "fa-solid fa-car";
+            driveTime.style.color      = "#00e676";
             driveTime.style.background = "rgba(0, 230, 118, 0.15)";
-            driveTime.style.display   = "inline-flex";
+            driveTime.style.display    = "inline-flex";
         }
     } else {
         burnValue.innerText      = "0h 0m 0s";
@@ -370,9 +363,9 @@ function concludeSession() {
         const dateString = now.toLocaleDateString('it-IT') + ", " + now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
 
         history.push({
-            date:          dateString,
-            maxBac:        currentBac,
-            mealType:      activeSession.mealName,
+            date:           dateString,
+            maxBac:         currentBac,
+            mealType:       activeSession.mealName,
             consumedDrinks: activeSession.consumedDrinks || [],
         });
 
@@ -391,7 +384,7 @@ function customConfirm(message, onConfirm) {
     const overlay = document.createElement('div');
     overlay.className = 'alert-overlay';
     overlay.innerHTML = `
-        <div class="glass-container modal-content alert-box" style="animation:popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; max-width:320px;">
+        <div class="glass-container modal-content alert-box" style="animation:slideUp 0.3s ease-out; max-width:320px;">
             <h3 style="color:var(--primary); margin-bottom:10px;">
                 <i class="fa-solid fa-flag-checkered"></i> Fine Serata
             </h3>
