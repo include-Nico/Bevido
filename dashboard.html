@@ -9,37 +9,214 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+
+    <!-- ============================================
+         MODAL: DRINK CONSUMATI
+         ============================================ -->
+    <div id="consumedModal" class="modal-overlay" style="display:none;">
+        <div class="glass-container modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3 style="color:var(--primary); margin:0;">
+                    <i class="fa-solid fa-list-ul"></i> Drink Consumati
+                </h3>
+                <button onclick="toggleConsumedModal()" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="consumedList"></div>
+        </div>
+    </div>
+
+    <!-- ============================================
+         MODAL: INFO SCIENTIFICHE
+         ============================================ -->
+    <div id="infoModal" class="modal-overlay" style="display:none;">
+        <div class="glass-container modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3 style="color:var(--primary); margin:0;">
+                    <i class="fa-solid fa-flask"></i> Come funziona il calcolo
+                </h3>
+                <button onclick="toggleInfoModal()" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <p>
+                <i class="fa-solid fa-dna"></i>
+                <span>
+                    <strong>Formula di Watson</strong>
+                    Calcola l'acqua corporea totale in base a età, peso e altezza per stimare con precisione la distribuzione dell'alcol.
+                </span>
+            </p>
+            <p>
+                <i class="fa-solid fa-calculator"></i>
+                <span>
+                    <strong>Widmark Ottimizzata</strong>
+                    Il tasso alcolemico (g/L) viene calcolato con BAC = (grammi alcol) / (peso × r), dove r è il fattore di distribuzione corporea.
+                </span>
+            </p>
+            <p>
+                <i class="fa-solid fa-utensils"></i>
+                <span>
+                    <strong>Fattore Pasto</strong>
+                    Mangiare rallenta l'assorbimento. Stomaco pieno riduce il picco fino al 30%; a digiuno aumenta del 20%.
+                </span>
+            </p>
+            <p>
+                <i class="fa-solid fa-triangle-exclamation" style="color:var(--warning);"></i>
+                <span>
+                    <strong>Attenzione</strong>
+                    Il calcolo è una stima orientativa. Non sostituisce un etilometro certificato. Non guidare mai se hai bevuto.
+                </span>
+            </p>
+            <button onclick="toggleInfoModal()" class="btn-primary" style="margin-top:10px;">
+                Ho capito
+            </button>
+        </div>
+    </div>
+
+    <!-- ============================================
+         SCHERMATA PRINCIPALE
+         ============================================ -->
     <div class="glass-container">
-        <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <button onclick="location.href='home.html'" style="background:none; border:none; color:white; font-size:1.5rem;"><i class="fa-solid fa-house"></i></button>
-            <h1 style="font-weight:800;">Party<span>!</span></h1>
-            <button onclick="concludeSession()" style="background:rgba(255,75,43,0.2); border:1px solid var(--danger); padding:5px 15px; border-radius:10px; color:white;">Fine</button>
+
+        <!-- HEADER -->
+        <header class="dash-header">
+            <button onclick="location.href='home.html'" class="icon-btn">
+                <i class="fa-solid fa-house"></i>
+            </button>
+            <h1 class="dash-title">Party<span>!</span></h1>
+            <button onclick="concludeSession()" class="btn-end">
+                Fine
+            </button>
         </header>
 
-        <div class="gauge-section">
+        <!-- SEZIONE GAUGE: TACHIMETRO ALCOLEMICO -->
+        <section class="gauge-section">
+
+            <!-- SVG gauge con BAC sovrapposto -->
             <div class="gauge-container">
-                <svg viewBox="0 0 200 100">
-                    <path class="gauge-bg" d="M20,90 A80,80 0 0,1 180,90" fill="none" stroke-width="12" />
-                    <path id="gaugeProgress" class="gauge-value" d="M20,90 A80,80 0 0,1 180,90" fill="none" stroke-width="12" stroke-dasharray="251.32" stroke-dashoffset="251.32" />
+                <svg viewBox="0 0 200 110" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        class="gauge-bg"
+                        d="M20,90 A80,80 0 0,1 180,90"
+                        fill="none"
+                        stroke-width="12"
+                        stroke-linecap="round"
+                    />
+                    <path
+                        id="gaugeProgress"
+                        class="gauge-value"
+                        d="M20,90 A80,80 0 0,1 180,90"
+                        fill="none"
+                        stroke-width="12"
+                        stroke-linecap="round"
+                        stroke-dasharray="251.32"
+                        stroke-dashoffset="251.32"
+                    />
                 </svg>
-                <span id="bacValue">0.00</span>
+                <!-- Valore BAC centrato sotto l'arco -->
+                <div class="gauge-center-text">
+                    <span id="bacValue">0.00</span>
+                    <small class="gauge-unit">g/L</small>
+                </div>
             </div>
+
+            <!-- Stato testuale -->
             <p id="statusText" class="status-msg">Sei sobrio.</p>
-            <div style="display:flex; flex-direction:column; align-items:center;">
-                <p id="driveTime" class="burn-timer" style="display:none;"><i class="fa-solid fa-car"></i> Guida: <strong id="driveValue"></strong></p>
-                <p id="burnTime" class="burn-timer"><i class="fa-solid fa-clock"></i> Smaltimento: <strong id="burnValue">0h 0m</strong></p>
+
+            <!-- Timer smaltimento e guida -->
+            <div class="timers-row">
+                <div id="driveTime" class="burn-timer" style="display:none;">
+                    <i id="driveIcon" class="fa-solid fa-car"></i>
+                    <span>
+                        <span id="driveLabel">Attesa Guida:</span>
+                        <strong id="driveValue"></strong>
+                    </span>
+                </div>
+                <div id="burnTime" class="burn-timer">
+                    <i class="fa-solid fa-clock"></i>
+                    <span>Smaltimento: <strong id="burnValue">0h 0m</strong></span>
+                </div>
             </div>
-        </div>
 
-        <div class="meal-grid">
-            <button class="meal-btn active" onclick="setMeal('Sano', 0.9)"><i class="fa-solid fa-leaf"></i><span>Sano</span></button>
-            <button class="meal-btn" onclick="setMeal('Sporco', 0.8)"><i class="fa-solid fa-burger"></i><span>Sporco</span></button>
-            <button class="meal-btn" onclick="setMeal('Pieno', 0.7)"><i class="fa-solid fa-utensils"></i><span>Pieno</span></button>
-            <button class="meal-btn" onclick="setMeal('Vuoto', 1.2)"><i class="fa-solid fa-warning"></i><span>Vuoto</span></button>
-        </div>
+        </section>
 
-        <div id="drinkList" class="quick-drinks"></div>
+        <hr class="divider">
+
+        <!-- SEZIONE PASTO -->
+        <section class="meal-section">
+            <h3>
+                <i class="fa-solid fa-bowl-food" style="color:var(--primary);"></i>
+                Stomaco
+                <button onclick="toggleInfoModal()" class="info-icon">
+                    <i class="fa-solid fa-circle-info"></i>
+                </button>
+            </h3>
+
+            <div class="meal-grid four-cols">
+                <button class="meal-btn active" onclick="setMeal('Sano', 0.9)">
+                    <i class="fa-solid fa-leaf"></i>
+                    <span>Sano</span>
+                </button>
+                <button class="meal-btn" onclick="setMeal('Sporco', 0.8)">
+                    <i class="fa-solid fa-burger"></i>
+                    <span>Sporco</span>
+                </button>
+                <button class="meal-btn" onclick="setMeal('Pieno', 0.7)">
+                    <i class="fa-solid fa-utensils"></i>
+                    <span>Pieno</span>
+                </button>
+                <button class="meal-btn danger-btn" onclick="setMeal('Digiuno', 1.2)">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>Digiuno</span>
+                </button>
+            </div>
+
+            <p id="mealWarning" class="warning-text">
+                Ottima scelta, mangiare rallenta l'assorbimento dell'alcol.
+            </p>
+        </section>
+
+        <hr class="divider">
+
+        <!-- SEZIONE DRINK -->
+        <section class="drink-section">
+
+            <!-- Intestazione con badge contatore e bottone lista -->
+            <div class="drink-header-row">
+                <h3>
+                    <i class="fa-solid fa-martini-glass-citrus" style="color:var(--primary);"></i>
+                    Aggiungi Drink
+                    <span id="drinkCounter" class="badge-count">0</span>
+                </h3>
+                <button
+                    onclick="toggleConsumedModal()"
+                    class="btn-secondary"
+                    style="width:auto; margin:0; padding:8px 14px; font-size:0.75rem;"
+                >
+                    <i class="fa-solid fa-list-ul"></i> Lista
+                </button>
+            </div>
+
+            <!-- Ricerca drink -->
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input
+                    type="text"
+                    id="drinkSearch"
+                    placeholder="Cerca un drink..."
+                    oninput="filterDrinks()"
+                    autocomplete="off"
+                >
+            </div>
+
+            <!-- Griglia drink dal DB -->
+            <div id="drinkList" class="quick-drinks"></div>
+
+        </section>
+
     </div>
+
     <script src="js/dashboard.js"></script>
 </body>
 </html>
