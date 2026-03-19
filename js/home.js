@@ -3,6 +3,7 @@ window.onload = () => {
     checkActiveSession();
     calculateWeeklyStats();
     renderMemories();
+    renderWeeklyChart();
 };
 
 let currentUser = null;
@@ -52,18 +53,8 @@ function saveProfile() {
 }
 
 // ==========================================
-// 2. GRAFICO SETTIMANALE
+// 2. GRAFICO SETTIMANALE INLINE
 // ==========================================
-function toggleChart() {
-    const modal = document.getElementById('chartModal');
-    if (modal.style.display === 'none') {
-        modal.style.display = 'flex';
-        renderWeeklyChart();
-    } else {
-        modal.style.display = 'none';
-    }
-}
-
 function renderWeeklyChart() {
     const history    = JSON.parse(localStorage.getItem('bevid0_history')) || [];
     const days       = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
@@ -87,17 +78,34 @@ function renderWeeklyChart() {
         data: {
             labels,
             datasets: [{
-                label: 'Picco g/L',
+                label: 'g/L',
                 data: dataPoints,
                 borderColor: '#00d4ff',
-                backgroundColor: 'rgba(0, 212, 255, 0.2)',
+                backgroundColor: 'rgba(0, 212, 255, 0.15)',
                 fill: true,
                 tension: 0.4,
+                pointRadius: 3,
+                pointBackgroundColor: '#00d4ff',
+                borderWidth: 2,
             }],
         },
         options: {
             responsive: true,
-            scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' } } },
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+            },
+            scales: {
+                x: {
+                    ticks: { color: '#94a3b8', font: { size: 10 } },
+                    grid:  { color: 'rgba(255,255,255,0.05)' },
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: { color: '#94a3b8', font: { size: 10 }, maxTicksLimit: 4 },
+                    grid:  { color: 'rgba(255,255,255,0.05)' },
+                },
+            },
         },
     });
 }
@@ -314,15 +322,5 @@ function startNewSession() {
 // 5. STATISTICHE SETTIMANALI
 // ==========================================
 function calculateWeeklyStats() {
-    const history = JSON.parse(localStorage.getItem('bevid0_history')) || [];
-
-    const weekCount = history.filter(s => {
-        const d = new Date(s.date.split(',')[0].split('/').reverse().join('-'));
-        return (new Date() - d) / (1000 * 60 * 60 * 24) <= 7;
-    }).length;
-
-    document.getElementById('weekCount').innerText = weekCount;
-
-    const max = Math.max(...history.map(s => parseFloat(s.maxBac)), 0);
-    document.getElementById('weekMax').innerText = max.toFixed(2);
+    // Mantenuto per compatibilità — il grafico inline sostituisce i contatori
 }
