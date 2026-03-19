@@ -269,7 +269,7 @@ function deleteMemory(id) {
 // ==========================================
 function calcBAC(active, user) {
     if (!active || !active.totalAlcoholGrams || !user) return 0;
-    const age = calculateAge(user.dob) || 25;   // fallback numerico sicuro
+    const age = calculateAge(user.dob) || 25;
 
     let tbw;
     if (parseFloat(user.ratio) > 0.6) {
@@ -280,9 +280,16 @@ function calcBAC(active, user) {
 
     const r          = (tbw / user.weight) * 0.8;
     const mealFactor = active.mealFactor || 0.9;
-    const bac        = (active.totalAlcoholGrams / (user.weight * r)) * mealFactor;
+    let peakBac      = (active.totalAlcoholGrams / (user.weight * r)) * mealFactor;
+    if (isNaN(peakBac) || peakBac < 0) peakBac = 0;
 
-    return isNaN(bac) || bac < 0 ? 0 : bac;
+    // Sottrai il metabolismo trascorso dal primo drink
+    if (active.startTime && peakBac > 0) {
+        const elapsedHours = (Date.now() - active.startTime) / (1000 * 60 * 60);
+        peakBac = Math.max(0, peakBac - (0.15 * elapsedHours));
+    }
+
+    return peakBac;
 }
 
 function formatTime(totalMins) {
@@ -299,9 +306,16 @@ function checkActiveSession() {
         document.getElementById('activeSessionCard').style.display = 'block';
         document.getElementById('newSessionCard').style.display    = 'none';
 
-        const bac  = calcBAC(active, currentUser);
-        const mins = (bac / 0.15) * 60;
-        document.getElementById('homeTimer').innerText = formatTime(mins);
+        const updateTimer = () => {
+            const fresh = JSON.parse(localStorage.getItem('bevid0_active_session'));
+            const bac   = calcBAC(fresh, currentUser);
+            const mins  = (bac / 0.15) * 60;
+            document.getElementById('homeTimer').innerText = formatTime(mins);
+        };
+
+        updateTimer();
+        // Aggiorna il timer ogni minuto
+        setInterval(updateTimer, 60 * 1000);
     } else {
         document.getElementById('activeSessionCard').style.display = 'none';
         document.getElementById('newSessionCard').style.display    = 'block';
