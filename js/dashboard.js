@@ -58,16 +58,18 @@ const drinksDB = [
 
 let currentUser = JSON.parse(localStorage.getItem('bevid0_user'));
 
-// Gestione Sessione Attiva
+// Gestione Sessione Attiva con tracciatore del Picco Massimo
 let activeSession = JSON.parse(localStorage.getItem('bevid0_active_session')) || {
     totalAlcoholGrams: 0,
     mealFactor: 0.9,
     mealName: "Sano",
-    consumedDrinks: []
+    consumedDrinks: [],
+    maxBacReached: 0
 };
 
-// Retrocompatibilità per vecchi salvataggi senza consumedDrinks
+// Retrocompatibilità per vecchi salvataggi
 if (!activeSession.consumedDrinks) activeSession.consumedDrinks = [];
+if (activeSession.maxBacReached === undefined) activeSession.maxBacReached = 0;
 
 window.onload = () => {
     if (!currentUser) window.location.href = 'index.html';
@@ -117,9 +119,25 @@ function removeDrink(index) {
     const removed = activeSession.consumedDrinks.splice(index, 1)[0];
 
     activeSession.totalAlcoholGrams -= removed.grams;
+    
+    // --- FIX SCIENTIFICO: Sottraiamo il contributo esatto del drink eliminato dal picco massimo ---
+    let tbw = 0;
+    const age = getAge(currentUser.dob);
+    if (currentUser.ratio > 0.6) {
+        tbw = 2.447 - (0.09156 * age) + (0.1074 * currentUser.height) + (0.3362 * currentUser.weight);
+    } else {
+        tbw = -2.097 + (0.1069 * currentUser.height) + (0.2466 * currentUser.weight);
+    }
+    const r = (tbw / currentUser.weight) * 0.8;
+    const drinkContribution = (removed.grams / (currentUser.weight * r)) * activeSession.mealFactor;
+
+    // Sottraiamo matematicamente l'impatto di questo drink dal picco storico registrato
+    activeSession.maxBacReached = Math.max(0, (activeSession.maxBacReached || 0) - drinkContribution);
+    
     if (activeSession.totalAlcoholGrams <= 0) {
         activeSession.totalAlcoholGrams = 0;
         activeSession.startTime = null; // Resetta il timer se i grammi sono 0
+        activeSession.maxBacReached = 0;
     }
 
     saveActiveSession();
@@ -236,6 +254,13 @@ function calculateBAC() {
         finalBac = Math.max(0, peakBac - (0.15 * elapsedHours));
     }
 
+    // Registra e aggiorna il picco massimo mai raggiunto
+    const currentBacNum = parseFloat(finalBac.toFixed(2));
+    if (currentBacNum > (activeSession.maxBacReached || 0)) {
+        activeSession.maxBacReached = currentBacNum;
+        saveActiveSession();
+    }
+
     updateGauge(finalBac.toFixed(2));
 }
 
@@ -263,7 +288,7 @@ function updateGauge(valueStr) {
     const driveLabel  = document.getElementById('driveLabel');
     const driveValue  = document.getElementById('driveValue');
 
-    // Aggiorna il valore numerico
+    // Aggiorna il valore numerico (mostra il valore metabolizzato in tempo reale)
     bacElement.innerText = valueStr;
 
     // Progresso arco
@@ -354,7 +379,8 @@ function filterDrinks() {
 // CHIUSURA SESSIONE E POPUP
 // ==========================================
 function concludeSession() {
-    const currentBac = document.getElementById('bacValue').innerText;
+    // RECUPERIAMO IL PICCO MASSIMO INVECE DEL VALORE ATTUALE DELLA UI
+    const finalMaxBac = (activeSession.maxBacReached || 0).toFixed(2);
 
     customConfirm("Vuoi concludere questa giornata e salvarla nello storico?", () => {
         let history = JSON.parse(localStorage.getItem('bevid0_history')) || [];
@@ -364,7 +390,7 @@ function concludeSession() {
 
         history.push({
             date:           dateString,
-            maxBac:         currentBac,
+            maxBac:         finalMaxBac, // Salva il massimo storico di questa sessione!
             mealType:       activeSession.mealName,
             consumedDrinks: activeSession.consumedDrinks || [],
         });
